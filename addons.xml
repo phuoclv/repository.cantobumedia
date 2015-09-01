@@ -11,11 +11,8 @@
 	<extension point="xbmc.addon.metadata">
 		<summary>Cantobu Media Entertainment</summary>
 		<description>Giải trí trên XBMC/Kodi</description>
-		<language>en</language>
+		<disclaimer></disclaimer>
 		<platform>all</platform>
-		<license>GNU General Public License - v2</license>
-		<source>https://github.com/phuoclv/repository.cantobumedia</source>
-		<email>phuoc1389@gmail.com</email>
 	</extension>
 </addon>
 
@@ -30,10 +27,7 @@
 	<extension point="xbmc.addon.metadata">
 		<summary>Cantobu Media Entertainment</summary>
 		<description>Giải trí trên XBMC/Kodi</description>
-		<language>en</language>
+		<disclaimer></disclaimer>
 		<platform>all</platform>
-		<license>GNU General Public License - v2</license>
-		<source>https://github.com/phuoclv/repository.cantobumedia</source>
-		<email>phuoc1389@gmail.com</email>
 	</extension>
 </addon>
