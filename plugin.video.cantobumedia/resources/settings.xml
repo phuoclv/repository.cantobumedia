@@ -1,0 +1,25 @@
+﻿<settings>
+	<category label="Thông tin Account">
+		<setting id="userhdviet" type="text" label="User name [COLOR darkorange]hdviet.com[/COLOR] (email/Số ĐT)" default="cantobu1@gmail.com"/>
+		<setting id="passhdviet" type="text" option="hidden" label="Password [COLOR darkorange]hdviet.com[/COLOR]" default="0914172637"/>
+
+		<setting id="userhayhay" type="text" label="User name [COLOR tomato]hayhaytv.vn[/COLOR] (email/Số ĐT)" default="cantobu1@gmail.com"/>
+		<setting id="passhayhay" type="text" option="hidden" label="Password [COLOR tomato]hayhaytv.vn[/COLOR]" default="0914172637"/>
+	
+		<setting id="mail_dchd" type="text" label="User name [COLOR yellow]dangcaphd.com[/COLOR] (email)" default="cantobu1@gmail.com"/>
+		<setting id="pass_dchd" type="text" option="hidden" label="Password [COLOR yellow]dangcaphd.com[/COLOR]" default="0914172637"/>
+
+		<setting id="usernamep" type="text" label="User name [COLOR deepskyblue]pub.vn[/COLOR]" visible="false"/>
+		<setting id="passwordp" type="text" option="hidden" label="Password [COLOR deepskyblue]pub.vn[/COLOR]" visible="false"/>
+
+		<setting id="usernamev" type="text" label="User name [COLOR deeppink]vuahd.tv[/COLOR] (email)" default="cantobu1@gmail.com"/>
+		<setting id="passwordv" type="text" option="hidden" label="Password [COLOR deeppink]vuahd.tv[/COLOR]" default="0914172637"/>		
+	</category>
+	<category label="Thông tin khác">
+		<setting id="hienthidanhmucphim" type="labelenum" label="[COLOR blue]Danh mục phim theo server:[/COLOR]" values="HDOnline|HDViet|HayHayTV" default="HDOnline"/>
+		<setting id="hdvietresolution" type="labelenum" label="[COLOR blue]Chọn độ phân giải tối đa trên[/COLOR] [COLOR darkorange]hdviet.com[/COLOR]" values="720|1080" default="720"/>
+		<setting label="Chất lượng phim" type="labelenum" id="video_quality" default="Full HD" values="SD|HD|Full HD" visible="false"/>
+		<setting id="sodonghienthi" type="labelenum" label="[COLOR blue]Số dòng hiển thị cho 1 trang[/COLOR]" values="20|30|50" default="30" visible="false"/>
+		<setting id="cookie" type="text" label="cookiestring" default="" visible="false"/>
+	</category>
+</settings>
