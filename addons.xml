@@ -6,7 +6,7 @@
         <import addon="script.module.simplejson" />
         <import addon="script.module.simple.downloader" version="1.9.4" />
     </requires>
-    <extension point="xbmc.python.pluginsource" library="xshare.py">
+    <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
