@@ -1,20 +1,17 @@
-#!/usr/bin/python
+__author__ = 'phuoclv'
 #coding=utf-8
 import xbmc,xbmcplugin,xbmcgui,xbmcaddon,urllib,urllib2,re,os,unicodedata,datetime,random,json
 import base64
 #import xbmc,xbmcaddon,xbmcplugin,xbmcgui,sys,urllib,urllib2,re,os,codecs,unicodedata,base64
 #import cookielib,os,string,cookielib,StringIO,gzip
-import client
-import xshare
-import hdviet
-from config import hayhaytv_vn, hdviet_com, hdonline_vn, megabox_vn, vuahd_tv, phimmoi_net
-#sys.path.append(os.path.join(home,'resources','lib'));import urlfetch
-import urlfetch
 
+home = xbmc.translatePath(xbmcaddon.Addon().getAddonInfo('path')).decode("utf-8")
+sys.path.append(os.path.join(home,'resources','lib'));import urlfetch;import xshare;import hdviet;import hdonline
+from config import hayhaytv_vn, hdviet_com, hdonline_vn, megabox_vn, vuahd_tv, phimmoi_net
 
 #addonID = xbmcaddon.Addon('plugin.video.cantobumedia')
 myaddon=xbmcaddon.Addon()
-home = xbmc.translatePath(xbmcaddon.Addon().getAddonInfo('path')).decode("utf-8")
+
 logos = xbmc.translatePath(os.path.join(home,"logos\\"))
 dataPath = xbmc.translatePath(os.path.join(home, 'resources'))
 csn = 'http://chiasenhac.com/'
@@ -36,11 +33,11 @@ if not os.path.exists(myfolder):myfolder=os.path.join(datapath,'myfolder')
 subsfolder=os.path.join(myfolder,'subs');tempfolder=os.path.join(myfolder,'temp')
 rows=int(myaddon.getSetting('sodonghienthi')) #Số dòng hiển thị cho 1 trang
 
-media_ext=['aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma','3g2','3gp','asf','asx','avi','flv','mov','mp4','mpg','mkv','m4v','rm','swf','vob','wmv','bin','cue','dmg','iso','mdf','toast','vcd','ts','flac']
+#media_ext=['aif','iff','m3u','m4a','mid','mp3','mpa','ra','wav','wma','3g2','3gp','asf','asx','avi','flv','mov','mp4','mpg','mkv','m4v','rm','swf','vob','wmv','bin','cue','dmg','iso','mdf','toast','vcd','ts','flac']
 color={'trangtiep':'[COLOR lime]','cat':'[COLOR green]','search':'[COLOR red]','phimbo':'[COLOR tomato]','phimle':'[COLOR yellow]'};icon={}
 for item in ['hdonline', 'vuahd', 'hdviet', 'hayhaytv', 'dangcaphd', 'megabox', 'phimmoi', 'hdcaphe', 'phimgiaitri', 'next', 'icon']:
 	icon.setdefault(item,os.path.join(logos,'%s.png'%item))
-hd = {'User-Agent' : 'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'}
+#hd = {'User-Agent' : 'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'}
 
 hienthidanhmucphim=myaddon.getSetting('hienthidanhmucphim')
 
@@ -278,7 +275,7 @@ def Menu_Group(url):
 	elif 'MenuMovie' in url:	
 		if hienthidanhmucphim == 'HDOnline':		
 			#HDOnline
-			link = client.make_request("http://hdonline.vn/")
+			link = hdonline.GetContent("http://hdonline.vn/")
 			link = ''.join(link.splitlines()).replace('\'','"')
 			try:
 				link =link.encode("UTF-8")
@@ -368,13 +365,13 @@ def Menu_Group(url):
 	elif 'SEARCH' in url:
 		#addDir('Tìm Video Nhạc','TimVideo','search',logos+'menu-music.png')
 		#addDir('Tìm Album Nhạc Không Lời','TimAlbum','search',logos+'menu-music.png')	  
-		servers = ['HDOnline', 'VuaHD', 'HDViet', 'HayHayTV', 'DangCapHD', 'MegaBox', 'PhimMoi', 'HDCaphe', 'PhimGiaiTri']
+		servers = ['HDOnline', 'VuaHD', 'HDViet', 'HayHayTV', 'DangCapHD', 'MegaBox', 'PhimMoi', 'PhimGiaiTri']
 		for server in servers:
 			addDir('- '+server,server,'search',icon[server.lower()])
 
 def category(url):
 	if hienthidanhmucphim == 'HDOnline':
-		link = client.make_request(url)
+		link = hdonline.GetContent(url)
 		link = ''.join(link.splitlines()).replace('\'','"')
 		try:
 			link =link.encode("UTF-8")
@@ -506,7 +503,7 @@ def Search_Result(url, query=''):
 	search_string = fixSearch(query)
 	if search_string=='-':search_string=''	
 	if 'hdonline.vn' in url:
-		content = client.make_request(url)
+		content = hdonline.GetContent(url)
 		content = ''.join(content.splitlines()).replace('\'','"')
 		try:
 			content =content.encode("UTF-8")
@@ -615,7 +612,6 @@ def Search_Result(url, query=''):
 				temp='trang-' if 'trang-' in url else 'page=';url=re.sub('%s\d{1,3}'%temp,'%s%d'%(temp,page+1),url)
 				name='%sTrang tiếp theo: trang %s[/COLOR]'%(color['trangtiep'],page+1)
 				addDir(name,url,'search_result&page=%d'%(page+1),"")	
-				#addir(name,url,img,'fanart',mode='aâ',page=page+1,query='play',isFolder=True)				
 	elif 'vuahd' in url:
 		body=make_request(url)
 		items=re.findall('img src="(.+?)".{,500}<a href="(.+?)" title="(.+?)"',body,re.DOTALL)
@@ -656,9 +652,7 @@ def Search_Result(url, query=''):
 		if query=='':pass			
 			#if items and len(items)>25:
 				#name=color['trangtiep']+'Trang tiếp theo: trang %s[/COLOR]'%str(page+1)
-				#addir(name,url,icon['vuahd'],fanart,mode,page=page+1,query='trangtiep',isFolder=True)
-
-		
+				#addir(name,url,icon['vuahd'],fanart,mode,page=page+1,query='trangtiep',isFolder=True)		
 	elif 'dangcaphd' in url:			
 		body=re.sub('\t|\n|\r|\f|\v','',make_request(url))
 		items=re.findall('<a class="product.+?" href="(.+?)" title="(.+?)">.+?<img src="(.+?)" (.+?)</li>',body)
@@ -674,8 +668,6 @@ def Search_Result(url, query=''):
 				i = i+1
 			strNameEn, name = strVnEn(str1, str2)
 			name = name + strYear
-			#if len(arrName) > 0 : name = arrName[1] + ' - ' + arrName[0]
-			#else : name = arrName[0]
 					
 			if fixSearchss(search_string) in fixSearchss(name) or search_string == '' : # xu ly tim kiem cho nhieu ket qua			
 				if re.search('<div class="sale">.+?</div>',other):
@@ -833,9 +825,7 @@ def Search_Result(url, query=''):
 						mode='120'	
 					href = pgt+href+'/Tap-1.html'
 					addir(name,href,pgt+img,'fanart',mode='13',page=1,isFolder=True)	
-			
-			#add_Link('[PhimGiaiTri] '+name,pgt+href+'/Tap-1.html',pgt+img)
-					
+								
 		#items = re.compile("<a  href='(.+?)'>(\d+)  <\/a>").findall(content) 		
 		#for url,name in items:
 		  #addDir('[COLOR lime]Trang tiếp theo '+name+'[/COLOR]',pgt+href.replace(' ','%20'),'medialist',icon['next'])
@@ -849,7 +839,7 @@ def Search_Result(url, query=''):
 			if fixSearchss(search_string) in fixSearchss(name) or search_string == '' : # xu ly tim kiem cho nhieu ket qua											
 				url = hdcaphe + url.replace('detail','video').replace('.html','/play/clip_1.html')			
 				content = Get_Url(url)
-				if 'clip_2' in content :				
+				if 'clip_2' in content:
 					if query=='':
 						name = color['phimbo'] + name + '[/COLOR]'
 						mode='13'	
@@ -859,7 +849,6 @@ def Search_Result(url, query=''):
 					else:
 						name = '[HDCaphe] ' + name
 						mode='120'											
-
 					addDir(name,url,13,hdcaphe + thumbnail)
 				else :
 					if query=='':
@@ -1328,7 +1317,7 @@ elif mode=='12' or mode=='120':#serverlist
 			
 	if hienthidanhmucphim <> 'VuaHD':
 		url='http://vuahd.tv/movies/q/%s'%search_string
-		Search_Result(url, query)
+		#Search_Result(url, query)
 
 	if hienthidanhmucphim <> 'HDViet':
 		url='http://movies.hdviet.com/tim-kiem.html?keyword=%s'%search_string
@@ -1352,11 +1341,13 @@ elif mode=='12' or mode=='120':#serverlist
 	
 	if hienthidanhmucphim <> 'HDCaphe':
 		url = hdcaphe + 'search-result.html?keywords=' + search_string
-		Search_Result(url, query)
+		#Search_Result(url, query)	
 	
 	if hienthidanhmucphim <> 'PhimGiaiTri':
 		url = pgt+'result.php?type=search&keywords='+search_string      
-		Search_Result(url, query)	
+		try:
+			Search_Result(url, query)	
+		except: pass
 	
 elif mode=='13':		#xử lý trường hợp phim bộ
 	if 'hdonline.vn' in url :
@@ -1513,7 +1504,7 @@ elif mode=='16':
 	if jsonObject.get('url'):		
 		link = jsonObject['url']		
 		if 'phimhd3s.com' in link or 'vn-hd.com' in link:
-		  client_id = client.client_id_2()
+		  client_id = hdonline.client_id_2()
 		  if client_id is not None:
 			link = link.replace('dc469e7a3c7f76e5bfcc0e104526fb85',client_id)		
 			addDir(link,'',0,'')	
@@ -1536,7 +1527,7 @@ elif mode=='16':
 			xbmc.sleep(3000)
 			xbmc.Player().setSubtitles(subfile)
 		  except:
-			notification('Không tải được phụ đề phim.');
+			notification(u'Không tải được phụ đề phim.');
 		  #urllib.urlretrieve (subtitle,subfile )
 		elif jsonObject.get('subtitle'):
 		  notification('Video này không có phụ đề rời.');
