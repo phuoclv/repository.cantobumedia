@@ -10,7 +10,6 @@
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary>Xshare - XBMC HD Video</summary>
 	<summary>Cantobu Media Entertainment</summary>
 	<description>Giải trí trên XBMC/Kodi</description>
 	<disclaimer></disclaimer>
