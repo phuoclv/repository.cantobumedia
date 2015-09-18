@@ -6,7 +6,7 @@ myaddon=xbmcaddon.Addon()
 home=xbmc.translatePath(myaddon.getAddonInfo('path'))
 datapath=xbmc.translatePath(os.path.join( xbmc.translatePath(myaddon.getAddonInfo('profile')),'data'))
 iconpath=xbmc.translatePath(os.path.join( xbmc.translatePath(myaddon.getAddonInfo('profile')),'icon'))
-sys.path.append(os.path.join(home,'resources','lib'));import urlfetch
+sys.path.append(os.path.join(home,'resources','lib'));from urlfetch import get,post
 #import urlfetch
 
 search_file=os.path.join(datapath,"search.xml");data_path=os.path.join(home,'resources','data')
@@ -22,22 +22,6 @@ color={'trangtiep':'[COLOR lime]','search':'[COLOR lime]','phimbo':'[COLOR tomat
 for hd in ['xshare','4share', 'dangcaphd', 'downsub', 'favorite', 'fptplay', 'fshare', 'gsearch', 'hdvietnam', 'icon', 'id', 'ifiletv', 'isearch', 'khophim', 'maxspeed', 'megabox', 'movie', 'msearch', 'myfolder', 'myfshare', 'phimfs', 'serverphimkhac', 'setting', 'tenlua', 'vaphim']:
 	icon.setdefault(hd,os.path.join(iconpath,'%s.png'%hd))
 hd = {'User-Agent' : 'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'}
-
-def alert(message,title="Cantobu Media"):
-  xbmcgui.Dialog().ok(title,"",message)
-
-def notification(message, timeout=7000):
-  xbmc.executebuiltin((u'XBMC.Notification("%s", "%s", %s)' % ('Cantobu Media', message, timeout)).encode("utf-8"))
-
-def extract(key, enc):
-    dec = []
-    enc = base64.urlsafe_b64decode(enc)
-    for i in range(len(enc)):
-        key_c = key[i % len(key)]
-        dec_c = chr((256 + ord(enc[i]) - ord(key_c)) % 256)
-        dec.append(dec_c)
-    return "".join(dec)
-
 
 def mess(message, timeShown=10000,title=''):
 	xbmc.executebuiltin((u'XBMC.Notification(%s,%s,%s,%s)'%('Xshare [COLOR green]%s[/COLOR]'%title,message,timeShown,icon['icon'])).encode("utf-8"))
@@ -64,6 +48,15 @@ def joinpath(p1,p2):
 	except:p=os.path.join(p1,str2u(p2))
 	return p
 
+def init_file():
+	datafolder=xbmc.translatePath(myaddon.getAddonInfo('profile'))
+	for folder in (datafolder,datapath,iconpath,myfolder,subsfolder,tempfolder):
+		if not os.path.exists(folder):os.mkdir(folder)
+	#xmlheader='<?xml version="1.0" encoding="utf-8">\n';p=datapath;q=myfolder
+	#for i in [(p,'search.xml'),(p,'hdvietnam.xml'),(p,'favourites.xml'),(p,'phimmoi.xml'),(p,'fpt.xml'),(q,'mylist.xml')]:
+		#file=joinpath(i[0],i[1])
+		#if not os.path.isfile(file):makerequest(file,xmlheader,'w')
+	
 def xshare_group(object,group):
 	return object.group(group) if object else ''
 
@@ -84,8 +77,7 @@ def xbmcsetResolvedUrl(url,name=''):
 		else:item.setInfo('video', {'Title':os.path.basename(url)})
 		name=''
 	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item);endxbmc()
-	#if myaddon.getSetting('autoload_sub')=='true' and name!='xshare':
-	if name!='xshare':
+	if myaddon.getSetting('autoload_sub')=='true' and name!='xshare':
 		if name:url=name
 		urltitle=urllib.unquote(os.path.splitext(os.path.basename(url))[0]).lower()
 		urltitle='.'+'.'.join(s for s in re.sub('_|\W+',' ',re.split('\d\d\d\d',urltitle)[0]).split())+'.'
@@ -219,38 +211,44 @@ def make_mySearch(name,url,img,fanart,mode,query):
 	elif attr=='w':mess(u'%s chuổi thất bại'%str2u(query))
 	return query
 	
-def make_request(url,headers={'User-Agent':'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'},resp='b'):
+def make_request(url,headers={'User-Agent':'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'},resp='b',maxr=0):
 	try:
-		response = urlfetch.get(url,headers=headers)
+		if maxr==0:response=get(url,headers=headers)
+		else:response=get(url,headers=headers,max_redirects=maxr)
 		if resp=='o':resp=response
 		else:
 			if resp=='j':resp=response.json
 			elif resp=='s':resp=response.status
+			elif resp=='u':resp=response.text
+			elif resp=='c':resp=response.cookiestring
 			else:resp=response.body
 			response.close()
-		return resp
 	except: 
 		mess(u'[COLOR red]Lỗi kết nối tới: %s[/COLOR]'%xshare_group(re.search('//(.+?)/',str2u(url)),1))
-		print 'Make Request Error: %s'%url;resp=''
+		resp='';print 'Make Request Error: %s'%url
 	return resp#unicode:body=response.text
-
-def make_post(url,headers={'User-Agent':'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'},data=''):
+	
+def make_post(url,headers={'User-Agent':'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'},data='',resp='o'):
 	try:
-		if data:response=urlfetch.post(url=url,headers=headers,data=data)
-		else:response=urlfetch.post(url=url,headers=headers)
-	except:mess(u'Không truy cập được %s'%str2u(url));response=''
-	return response
-
+		if data:response=post(url=url,headers=headers,data=data)
+		else:response=post(url=url,headers=headers)
+		if resp=='b':response=response.body
+		elif resp=='j':response=response.json
+	except:
+		mess(u'Post link error: %s'%str2u(url));print 'Post link error: %s'%str2u(url)
+		response={} if resp=='j' else ''
+	return response	
+	
 def makerequest(file,string='',attr='r'):
 	file=str2u(file)
 	if attr=='r':
 		try:f=open(file);body=f.read();f.close()
-		except:mess(u'Lỗi đọc file: %s'%str2u(os.path.basename(file)));body=''
+		except:body=''
 	else:
 		try:f=open(file,attr);f.write(string);f.close();body=string
 		except:mess(u'Lỗi ghi file: %s'%str2u(os.path.basename(file)));body=''
 	return body
-
+	
 def rename_file(sf,df,kq='ok'):
 	try:
 		if os.path.isfile(df):os.remove(df)
@@ -318,9 +316,9 @@ def dangcaphd(name,url,img,mode,page,query):
 		pattern='<a class="current">\d{1,5}</a><a href="(.+?)">(\d{1,5})</a>.*<a href=".+?page=(\d{1,5})">.+?</a></div>'
 		page_control=re.search(pattern,body)
 		if page_control:
-			href=re.sub('&amp;','',xshare_group(page_control,1));trangke=xshare_group(page_control,2)
-			tongtrang=int(xshare_group(page_control,3))/35+1
-			name=color['trangtiep']+'Trang tiếp theo: trang %s/%d[/COLOR]'%(trangke,tongtrang)
+			href=re.sub('&amp;','',page_control.group(1));pagenext=page_control.group(2)
+			pages=int(page_control.group(3))/rows+1
+			name=color['trangtiep']+'Trang tiếp theo: trang %s/%d[/COLOR]'%(pagenext,pages)
 			addir(name,href,mode=mode,query=query,isFolder=True)
 	def dangcaphd_get_link(url):
 		hd['Cookie']=login()
@@ -334,7 +332,7 @@ def dangcaphd(name,url,img,mode,page,query):
 			if makerequest(subfullpathfilename,string=make_request(url),attr='wb'):sub=subfullpathfilename
 		return sub
 	def login(headers={'User-Agent':'Mozilla/5.0 Chrome/39.0.2171.71 Firefox/33.0'}):
-		url="http://dangcaphd.com/login.html";u=myaddon.getSetting('userhdviet');p=myaddon.getSetting('passhdviet')
+		url="http://dangcaphd.com/login.html";u=myaddon.getSetting('mail_dchd');p=myaddon.getSetting('pass_dchd')
 		response=make_post(url,headers,urllib.urlencode({"_submit":"true","email":u,"password": p}))
 		try:
 			if not response.json['login']:f=response.cookiestring;m='1';headers['Cookie']=f
@@ -632,264 +630,352 @@ def pubvn(name,url,img,mode,page,query):
 
 def hdviet(name,url,img,mode,page,query):
 	color['hdviet']='[COLOR darkorange]';icon['hdviet']=os.path.join(iconpath,'hdviet.png')
-	home='http://movies.hdviet.com/';direct_link='https://api-v2.hdviet.com/movie/play?movieid=%s'
+	home='http://movies.hdviet.com/'
+	direct_link='https://api-v2.hdviet.com/movie/play?accesstokenkey=%s&movieid=%s'
 	def namecolor(name):return '%s%s[/COLOR]'%(color['hdviet'],name)
-	def login():
+	def s2s(string):
+		return ' '.join(re.sub('&.+;',xsearch('&(\w).+;',s,1),s) for s in string.split())
+	def getcookie():
 		u=myaddon.getSetting('userhdviet');p=myaddon.getSetting('passhdviet')
 		import hashlib;data=urllib.urlencode({'email':u,'password':hashlib.md5(p).hexdigest()})
 		response=make_post('http://movies.hdviet.com/dang-nhap.html',hd,data)
-		try:resp=response.json
-		except:resp={u'r': u'Lỗi đăng nhập hdviet.com', u'e': 3}
-		mess(u'HDViet.com: '+resp['r'],2000);f=''
-		if resp['e']==0:f=response.cookiestring;makerequest(joinpath(tempfolder,'hdviet.cookie'),f,'w')
-		return f#make_post('http://movies.hdviet.com/dang-xuat.html',hd)
-	def additems(body):
-		pattern='<a href="(.{,200})"><img src="(.+?)"(.+?)"h2-ttl3">(.+?)<span>(.+?)</span>(.*?)<a'
-		links=re.findall(pattern,body)
-		for link,img,temp,ttl3,title,cap in links:
-			title=ttl3.replace('&nbsp;','')+'-'+title;caps=''
-			if 'icon-SD' in cap:caps+='[COLOR gold]SD[/COLOR]'
-			if 'icon-720' in cap:caps+='[COLOR gold]HD[/COLOR]720'
-			if 'icon-1080' in cap:caps+='[COLOR gold]HD[/COLOR]1080'
-			if 'icon-TM' in cap:caps+='[COLOR green]TM[/COLOR]'
-			if '>18+<' in cap:caps+='[COLOR red]18+[/COLOR]'
-			isFolder=xshare_group(re.search('"labelchap2">(\d{1,3})</span>',temp),1)
-			link=xshare_group(re.search('id="tooltip(\d{,10})"',temp),1).strip()
-			if not isFolder:addir(caps+' '+title,link,img,fanart,mode,page,query='hdvietplay')
-			elif isFolder=='1':hdviet(title,link,img,mode,page,'hdvietfolder')
-			else:addir(caps+' '+namecolor(title),link,img,fanart,mode,page,query='hdvietfolder',isFolder=True)
-	def getResolvedUrl(id):
-		response=make_request(direct_link%id,headers=hd,resp='j')
-		try:result=response['r']
-		except:result=''
-		return result
-	def hdviet_search(string):
-		url='http://movies.hdviet.com/tim-kiem.html?keyword=%s'%urllib.quote(string)
-		hdviet(name,url,img,mode,page,query='timkiem')
-	if query=='hdviet.com':
-		name=color['search']+"Search trên hdviet.com[/COLOR] (Hãy chọn độ phân giải trên settings nhé)"
-		addir(name,'http://movies.hdviet.com/tim-kiem.html',icon['icon'],mode=mode,query='search',isFolder=True)
-		body=make_request(home)
-		items=re.findall('"mainitem" menuid="(.+?)" href="(.+?)" title=".+?">(.+?)</a>',body)
-		for id,href,name in items:
-			addir(namecolor(name),home,icon['hdviet'],fanart,mode,page,query=id,isFolder=True)
-		addir(namecolor('Thể loại phim'),'the-loai',icon['icon'],mode=mode,query='the-loai-phim',isFolder=True)
-		url='http://movies.hdviet.com/phim-yeu-thich.html'
-		addir(namecolor('Phim yêu thích'),url,icon['icon'],mode=mode,query='yeu-thich',isFolder=True)
-		items=re.findall('"h2-ttl cf">.+?<a href="(.+?)" title=".+?" >(.+?)</a>',body)
-		tempbody=body[body.find('h2-ttl cf')+10:]
-		for href,name in items:
-			addir(namecolor(name),href,icon['hdviet'],fanart,mode,page,query='1',isFolder=True)
-			subbody=tempbody[:tempbody.find('h2-ttl cf')];tempbody=tempbody[tempbody.find('h2-ttl cf')+10:]
-			additems(subbody)
-	elif query=='search':make_mySearch('','hdviet.com','','',mode,'get')
-	elif query=="INP":hdviet_search(make_mySearch('',url,'','','','Input'))
-	elif url=='hdviet.com':page=1 if 'Trang tiếp theo' not in name else page;hdviet_search(query)
-	elif query=='the-loai-phim':		
-		for href,name in re.findall('<p><a href="(.+?)" title=".+?">(.+?)</a></p>',make_request(home)):
-			addir(namecolor(name),href,icon['hdviet'],fanart,mode,page,query='1',isFolder=True)
-	elif query=='the-gioi-sao':
-		for href,name in re.findall('<li><a href="(.+?)" title=".+?">(.+?)</a></li>',make_request(home)):
-			addir(namecolor(name),href,icon['hdviet'],fanart,mode,page,query='1',isFolder=True)
-	elif query=='3' and url==home:#Phim lẻ
-		items=re.findall('<a href="(.+?)" .?menuid="(.+?)" .?title=".+?" >(.+?)</a>',make_request(home))
-		for href,id,name in items:
-			addir(namecolor(name),href,icon['hdviet'],fanart,mode,page,query=id,isFolder=True)
-	elif query=='10' and url==home:#Phim bộ
-		body=make_request(home)
-		items=re.findall('<a href="(.+?)" menuid="(.+?)" title=".+?">(.+?)</a>',body)
-		items+=re.findall('<a class="childparentlib" menuid="(.+?)" href="(.+?)" title=".+?">(\s.*.+?)</a>',body)
-		for href,id,name in items:
-			if 'au-my' in href:name='Phim bộ Âu Mỹ %s'%name.strip()
-			elif 'hong-kong' in href:name='Phim bộ Hồng Kông %s'%name.strip()
-			elif 'trung-quoc' in href:name='Phim bộ Trung Quốc %s'%name.strip()
-			else:name='Phim bộ %s'%name.strip()
-			if href in '38-39-40':temp=href;href=id;id=temp
-			addir(namecolor(name),href,icon['hdviet'],fanart,mode,page,query=id,isFolder=True)
-	elif query=='hdvietfolder':
-		href='http://movies.hdviet.com/lay-danh-sach-tap-phim.html?id=%s'%url
-		response=make_request(href,resp='j')
-		if not response:return
-		for eps in range(1,int(response["Sequence"])+1):
-			title='Tập %s/%s-%s'%(format(eps,'0%dd'%len(response['Episode'])),str(response['Episode']),re.sub('\[.?COLOR.{,12}\]','',name))
-			addir(title,'%s_e%d'%(url,eps),img,fanart,mode,page,query='hdvietplay')
-	elif query=='hdvietplay':
-		links=getResolvedUrl(url);linksub='';maxspeedlink=''
-		if not links:mess(u'[COLOR red]HDViet.com: Get link thất bại[/COLOR]');return
-		link=re.sub('_320_480_','_320_1920_vip_',links['LinkPlay'])
-		epi=xshare_group(re.search('/(\d{1,6}_e\d{1,4})_',link),1)
-		if epi:link=link.replace(epi,url)
-		href=link+'?audioindex=1' if myaddon.getSetting('hdvietaudio')=='true' else link
-		allresolution=make_request(href)
-		if len(allresolution)<100:
-			href=link;allresolution=make_request(href)
-			if len(allresolution)<100:mess(u'[COLOR red]HDViet.com: Get maxspeed link thất bại[/COLOR]');return
-		hd['Cookie']=login();resolutions=['1920','1792','1280','1024','800','640','480']
-		if not hd['Cookie']:resolution=3
+		return response.cookiestring
+	def login_hdviet():
+		u=myaddon.getSetting('userhdviet');p=myaddon.getSetting('passhdviet')
+		url='https://id.hdviet.com/authentication/login'
+		response=make_post(url,data='email=%s&password=%s'%(u,p),resp='j')
+		if response and response.get('error')==0:
+			response=response.get('data')
+			mess(u'[COLOR green]Login hdviet.com Success[/COLOR]',title='%sHDViet.com[/COLOR]'%color['hdviet'])
+			json_rw('hdviet.cookie',response)
+		elif response and response.get('error')==27:
+			mess(u'[COLOR red]Acc bị khóa tạm thời. Vào web để login nhé!!![/COLOR]',title='%sHDViet.com[/COLOR]'%color['hdviet']);response=dict()
+		elif response and response.get('error') in (25,22):
+			mess(u'[COLOR red]%s[/COLOR]'%response.get('message'),title='%sHDViet.com[/COLOR]'%color['hdviet'])
+			response=dict()
 		else:
-			body=make_request('http://movies.hdviet.com/dang-ky-hdvip.html',headers=hd)
-			maxresolution=myaddon.getSetting('hdvietresolution')
-			vip=xshare_group(re.search('<span>HDVip</span>.+(\d)',body),1)
-			if (vip or 'xshare' in myaddon.getSetting('userhdviet')) and maxresolution=='1080':resolution=0
-			else:resolution=2
-			make_post('http://movies.hdviet.com/dang-xuat.html',headers=hd).close
-		if resolution>1 and maxresolution=='1080':
-			mess(u'[COLOR red]Hãy gia hạn acc VIP để có độ phân giải tối đa nhé.[/COLOR]',title=u'HDViet thông báo')
-			xbmc.sleep(5000)
-		for res in range(resolution,len(resolutions)):
-			maxspeedlink=xshare_group(re.search('(http.+%s.+)'%resolutions[res],allresolution),1)
-			if maxspeedlink:break
-		if not maxspeedlink: maxspeedlink=href
-		try:linksub='xshare' if links["AudioExt"][0]['Label']==u'Thuyết Minh' else linksub
-		except:pass
-		if not linksub:
-			for source in ['Subtitle','SubtitleExt','SubtitleExtSe']:
-				try:
-					linksub=links['%s'%source]['VIE']['Source']
-					if linksub:
-						ep1=xshare_group(re.search('/(e\d{1,3})/',linksub,re.I),1)
-						ep2=xshare_group(re.search('_(e\d{1,3})_',maxspeedlink,re.I),1)
-						if ep1 and ep2:linksub=linksub.replace(ep1,ep2.upper())
-						if download_subs(linksub):break
-				except:pass
-		print urllib.unquote(os.path.splitext(os.path.basename(linksub))[0])
-		xbmcsetResolvedUrl(maxspeedlink,urllib.unquote(os.path.splitext(os.path.basename(linksub))[0]))
-	elif query=='Themmucyeuthich':
-		def post_url(cookie):
-			hd['Cookie']=cookie
-			body=make_post('http://movies.hdviet.com/them-phim-yeu-thich.html',hd,urllib.urlencode({"MovieID":"%s"%url}))
-			try:json=body.json
-			except:json={'e':1,'r':'Lỗi thêm phim yeu thisch'}
-			return json
-		json=post_url(makerequest(joinpath(tempfolder,'hdviet.cookie')))
-		if json['e']>0 and 'nằm trong' not in json['r'].encode('utf-8'):json=post_url(login())
-		mess(u'%s'%json['r'])
-	else:
-		if query=='yeu-thich':
-			hd['Cookie']=makerequest(joinpath(tempfolder,'hdviet.cookie'))
-			body=make_request(url,hd)
-			if myaddon.getSetting('userhdviet') not in body:hd['Cookie']=login();body=make_request(url,hd)
-		else:body=make_request(url)
-		body=body[body.find('box-movie-list'):body.find('h2-ttl cf')];additems(body)
-		pages=re.findall('<li class=""><a href="(.+?)">(.+?)</a></li>',body[body.find('class="active"'):])
-		if pages:
-			pagenext=pages[0][1];pageend=pages[len(pages)-1][1]
-			name='%sTrang tiếp theo: trang %s/%s[/COLOR]'%(color['trangtiep'],pagenext,pageend)
-			addir(name,pages[0][0],img,fanart,mode,page,query,isFolder=True)
+			import hashlib;data=urllib.urlencode({'email':u,'password':hashlib.md5(p).hexdigest()})
+			response=make_post('http://movies.hdviet.com/dang-nhap.html',hd,data)
+			try:resp=response.json
+			except:resp={u'r': u'Lỗi đăng nhập hdviet.com', u'e': 3}
+			if resp.get('e')==0:
+				mess(u'[COLOR green]%s[/COLOR]'%resp['r'],title='%sHDViet.com[/COLOR]'%color['hdviet'])
+				hd['Cookie']=response.cookiestring
+				response=make_request('http://movies.hdviet.com/dieu-khoan-su-dung.html',headers=hd)
+				import base64
+				token=base64.b64decode(xsearch('<a class="userinfo".+?token=(.+?)"',response,1))
+				response={'Cookie':hd['Cookie'],'access_token':token};json_rw('hdviet.cookie',response)
+			else:response=dict();mess(u'[COLOR red]%s[/COLOR]'%resp['r'],title='%shdviet.com[/COLOR]'%color['hdviet'])
+		return response#make_post('http://movies.hdviet.com/dang-xuat.html',hd)
+	def getResolvedUrl(id_film,loop=0):#Phim le/phim chieu/ke doi dau thien ac
+		def getlinkhdviet(token,id_film):
+			id_film=id_film.replace('_e','&ep=')
+			response=make_request(direct_link%(token,id_film),resp='j')
+			try:links=response['r'];link=response['r']['LinkPlay']
+			except:links=dict()
+			return links
+		print id_film
+		data=json_rw('hdviet.cookie')
+		links=getlinkhdviet(data.get('access_token'),id_film)
+		if not links:return links
+		link=links.get('LinkPlay')
+		if '0000000000000000000000' in link:
+			data=login_hdviet();links=getlinkhdviet(data.get('access_token'),id_film)
+		if links:
+			link=links.get('LinkPlay')
+			max_resolution='_1920_' if myaddon.getSetting('hdvietresolution')=='1080' else '_1280_'
+			resolutions=['_1920_','_1885_','_1876_','_1866_','_1792_','_1280_','_1024_','_800_','_640_','_480_']
+			for resolution in resolutions:
+				if resolution in link:link=link.replace(resolution,max_resolution);break
+			if '_e' in id_film:link=re.sub('%s_e\d{1,3}_'%id_film.split('_')[0],'%s_'%id_film,link)
+			extm3u=make_request(link);link=''
+			for resolution in resolutions:
+				if resolution in extm3u:
+					link=xsearch('(http://.+%s.+m3u8)'%resolution,extm3u,1)
+				if link:break
+		if link and loop==0:
+			response=make_request(link,resp='o')
+			if response and 'filename' not in response.headers.get('content-disposition',''):
+				data=login_hdviet();return getResolvedUrl(id_film,1)
+		if link:
+			try:linksub='xshare' if links["AudioExt"][0]['Label']==u'Thuyết Minh' else ''
+			except:linksub=''
+			if not linksub:
+				for source in ['Subtitle','SubtitleExt','SubtitleExtSe']:
+					try:
+						linksub=links['%s'%source]['VIE']['Source']
+						if linksub:
+							if download_subs(linksub):break
+					except:pass
+		else:linksub=''
+		return link,linksub
+	if query=='hdvietplay':
+		link,sub=getResolvedUrl(url);print link,sub
+		if not link:mess(u'[COLOR red]Get link thất bại[/COLOR]',title='%sHDViet.com[/COLOR]'%color['hdviet'])
+		else:
+			if sub:mess(u'[COLOR green]Phụ đề của HDViet.com[/COLOR]',title='%sHDViet.com[/COLOR]'%color['hdviet'])
+			xbmcsetResolvedUrl(link,urllib.unquote(os.path.splitext(os.path.basename(sub))[0]))
 
-def hayhaytv(name,url,img,mode,page,query):
+
+def sub_body(href,s1,s2,content=''):
+	if not content:content=make_request(href,maxr=3)
+	else:content=href
+	return content[content.find(s1):content.find(s2)]
+
+def json_rw(file,dicts={},key=''):
+	if dicts:makerequest(joinpath(datapath,file),json.dumps(dicts),'w')
+	else:
+		try:dicts=json.loads(makerequest(joinpath(datapath,file)))
+		except:dicts={}
+		if key:dicts=dicts.get(key,())
+	return dicts
+
+def play_youtube(url):#https://www.youtube.com/get_video_info?video_id=xhNy0jnAgzI
+	def choice_solution(items,label_quality):#label_quality in ('quality','quality_label')
+		url=''
+		for solution in ('1080','720','medium','small'):
+			for item in items:
+				x,y=item.get(label_quality),item.get('type')
+				if x and y and solution in x and 'video' in y and 'mp4' in y:
+					url=urllib.unquote(item.get('url'));break
+			if url:break
+		return url
+	url='https://www.youtube.com/watch?v=%s&spf=navigate-back'%xsearch('(\w{10,20})',url,1)
+	data=make_request(url,resp='j',maxr=3);fmts=''
+	if not data:return
+	for i in range(0,len(data)):#'adaptive_fmts','url_encoded_fmt_stream_map'
+		try:fmts=data[i]['data']['swfcfg']['args']['url_encoded_fmt_stream_map'];break
+		except:pass
+	data=[];link=''
+	for items in fmts.split(','):
+		dict={}
+		for item in items.split('&'):
+			try:dict[item.split('=')[0]]=item.split('=')[1]
+			except:pass
+		data.append(dict)
+	link=choice_solution(data,'quality')
+	if link:xbmcsetResolvedUrl(link,re.sub(' \[COLOR.+?/COLOR\]','',name)+'Maxlink')
+	else:mess(u'[COLOR red]Get maxspeed link fail[/COLOR]',title='[COLOR green]youtube.com[/COLOR]')
+	
+def hayhaytv(name,url,img,fanart,mode,page,query):
+	home='http://www.hayhaytv.vn/';ajax=home+'ajax_hayhaytv.php';api='http://api.hayhaytv.vn/'
 	color['hayhaytv']='[COLOR tomato]';icon['hayhaytv']=os.path.join(iconpath,'hayhaytv.png')
-	home='http://movies.hayhaytv.vn/';ajax=home+'ajax_hayhaytv.php'
-	def namecolor(name):return '%s%s[/COLOR]'%(color['hayhaytv'],name)
 	def login():
 		u=myaddon.getSetting('userhayhay');p=myaddon.getSetting('passhayhay')
 		data=urllib.urlencode({'email':u,'password':p,'remember_account':0})
-		response=make_post('http://www.hayhaytv.vn/ajax_jsonp.php?p=jsonp_login',data=data)
-		makerequest(joinpath(data_path,'hayhaytv.cookie'),response.cookiestring,attr="wb")
-		return response.cookiestring
-	def getmaxspeedlink(url,headers):
-		body=make_request(url,headers=headers)
-		id=xshare_group(re.search('FILM_ID\D{3,7}(\d{3,6})',body),1) if ".sub'" in body else ''
-		url=xshare_group(re.search("initVideoUrl.+'(.+?)'",body),1)
-		if 'cdnviet.com' not in url:url=xshare_group(re.search("initVideoUrlOld.+'(.+?)'",body),1)
-		return url,id
-	def getdata(id):#Đoạn code này sử dụng mã bảo mật từ add-on HayHayTV.vn
-		url='https://www.fshare.vn/folder/5VNFUPO32P6F'
-		hd=xshare_group(re.search('<title>.*xx(.+?)xx.*</title>',make_request(url)),1).split('-')
-		data='device=xshare&secure_token=1.0&request='+urllib.quote('{"movie_id":"%s"}'%id)
-		response=make_post('http://api.hayhaytv.vn/movie/movie_detail',{hd[0]:'%s %s'%(hd[1],hd[2])},data)
-		#print response.json['data']
-		try:json=response.json['data']
-		except:json={}
-		return json		
-	def getitems(body):
-		p='<a data-tooltip.{,100}href="(.+?)".{,500}data-original="(.+?)".{,300}'
-		p+='class="orange_color">(.+?)</span>.{,100}<span>(.*?)</span>'
-		for href,img,name_e,name_v in re.findall(p,body,re.DOTALL):
-			name=name_v+'-'+color['subscene']+name_e+'[/COLOR]' if name_v else name_e
-			addir(name,href,img,fanart,mode,page,query='play')
+		response=make_post('%sajax_jsonp.php?p=jsonp_login'%home,data=data)
+		try:
+			if response.json['success']=='success':
+				mes(u'[COLOR green]Login hayhaytv thành công[/COLOR]');f=response.cookiestring
+				makerequest(joinpath(datapath,'hayhaytv.cookie'),f,'w')
+			else:mes(u'[COLOR red]Bạn hãy kiểm tra user/pass trên hayhaytv.vn[/COLOR]');f=''
+		except:mes(u'[COLOR red]Login hayhaytv thấy bại[/COLOR]');f=''
+		return f
+	def mes(string):mess(string,title=namecolor('hayhaytv.vn'))
+	def namecolor(name):return '%s%s[/COLOR]'%(color['hayhaytv'],name)
+	def get_date(string):
+		s=xsearch('/(\d{8})/',string,1)
+		return '%s/%s/%s'%(s[:2],s[2:4],s[4:8]) if s else None
+	def get_year(string):return xsearch('(20\d\d|19\d\d)',string,1)
+	def get_idw(url):return xsearch('-(\w{6,20})\.html',url,1)
+	def get_id(content):return xshare_group(re.search('FILM_ID\D{3,7}(\d{3,6})',content),1)
+	def get_i(content,tag):return xsearch('<.+%s:.+>(.+?)?</li>'%tag,content,1).strip()
+	def setskin():
+		if xbmc.getSkinDir()=='skin.confluence':xbmc.executebuiltin('Container.SetViewMode(504)')
 	def hayhaytv_search(string):
 		url='http://www.hayhaytv.vn/tim-kiem/%s/trang-1'%'-'.join(s for s in string.split())
 		hayhaytv(name,url,img,mode,page=1,query='M3')
+	def getinfo(body,sticky=dict()):
+		for stic,info,plot in re.findall('id="(sticky.+?)" class="atip">(.+?)<p>(.*?)</p>',body,re.DOTALL):
+			gen=get_i(info,'Thể loại');ctry=get_i(info,'Quốc Gia');rat=get_i(info,'IMDB')
+			dur=xsearch('(\d{1,4})',get_i(info,'Thời lượng'),1)
+			eps=xsearch('<span>Số tập:</span>(.+?)</li>',info,1,re.DOTALL).strip()
+			sticky[stic]=(eps,gen,ctry,dur,rat,plot)
+		#pattern='<a.+?tooltip="(.+?)" href="(.+?)">.*?"(http://img.*?)".*?color">(.*?)</span>.*?<span>(.*?)</span>(.*?)</a>'
+		pattern='tooltip="(.+?)".+?href="(.+?)">.+?"(http://img.+?)".+?color">(.*?)</span>.*?<span>(.*?)</span>(.*?)</a>'
+		items=list()#vie,eng,href,img,epi,eps,gen,ctry,dur,rat,plot
+		for stic,href,img,eng,vie,tap in re.findall(pattern,body,re.DOTALL):
+			if sticky.get(stic):items.append(((vie,eng,href,img,xsearch('<p>(.+?)</p>',tap,1))+sticky[stic]))
+		return items
+	def update_home(adict):
+		mes(u'[COLOR green] Database updating...[/COLOR]')
+		body=make_request(home,headers=hd)
+		if not body:return adict
+		content=sub_body(body,'class="menu_header"','class="box_login"','1')
+		adict['mar-r20']=[s for s in re.findall('menu_fa_text.+?" href="(.+?)".*>(.+?)</a>',body) if os.path.basename(s[0])]
+		for href,item in re.findall('href="(.+?)".+?<a (.+?)</ul>',content,re.DOTALL):
+			for link,name in adict['mar-r20']:
+				if href==link and 'trailer' not in link:
+					name=os.path.basename(href)
+					adict['m-%s'%name]=re.findall('href="(.+?)".*?>(.+?)</a>',item)
+		pattern='href="(.+?)".*?>(.+\s.+|.+?)</a>.*\s?.*</h2>'
+		adict['main']=[(s[0],' '.join(s for s in s[1].split())) for s in re.findall(pattern,body)]
+		content=sub_body(body,'class="banner_slider"','class="main"','1')
+		adict['banner_slider']=re.findall('<h3><a href=".+-(\w{5,20})\.html"',content)
+		for p in ('phimbo','phimle','tvshow','clip'):
+			mes(u'[COLOR green] Database updating...%s[/COLOR]'%p)
+			for page in range(1,100):
+				url='http://www.hayhaytv.vn/ajax_hayhaytv.php?p=%s&page=%d'%(p,page)
+				items=getinfo(make_post(url,resp='b'));items_new=[s for s in items if get_idw(s[2]) not in adict]
+				for s in items:adict[get_idw(s[2])]=s
+				if len(items_new)==0:break
+		xbmc.executebuiltin("Dialog.Close(all, true)")
+		return json_rw('hayhaytv.json',dicts=adict)
+	def addDirs(items,page='1'):
+		listitems=list()
+		for item in items:
+			vie,eng,href,img,epi,eps,gen,ctry,dur,rat,plot=item
+			#vie,eng,href,img,fan,thumb,date,year,gen,ctry,dur,rat,rev,views,epi,eps,drt,act,upl,sea,plot=item
+			href='%s/%s'%(os.path.dirname(href),urllib.quote(u2s(os.path.basename(href))))
+			title=vie+' - '+eng if vie and eng else vie if vie else eng;dur=xsearch('(\d{1,4})',dur,1)
+			if eps and eps!='1':query='readfolder';title=namecolor(title)+' %s/%s'%(epi if epi else '?',eps)
+			else:query='play'
+			fan=img.replace('/crop/','/');thumb=img.replace('/crop/','/thumb/')
+			date=get_date(img);year=get_year(eng);sea=xsearch('Season (\d{1,2})',eng,1)
+			listItem = xbmcgui.ListItem(label=title,iconImage=img,thumbnailImage=thumb)
+			if rat:plot='[COLOR tomato]IMDB:[/COLOR] %s\n'%rat+plot
+			info={'title':title,'date':date,'year':year,'duration':dur,'rating':rat,'country':ctry,'genre':gen+' [COLOR green]%s[/COLOR]'%ctry,'plot':plot,'Episode':epi,'Season':sea}
+			listItem.setInfo(type="Video", infoLabels=info)
+			#listItem.setArt({"thumb":thumb,"poster":img,"fanart":fan})
+			if query=='play':listItem.setProperty('IsPlayable', 'true')
+			u=sys.argv[0]+"?url="+urllib.quote_plus(href)+"&img="+urllib.quote_plus(img)+"&fanart="+urllib.quote_plus(fan)+"&mode="+str(mode)+"&page="+str(page)+"&query="+query+"&name="+title
+			listitems.append((u,listItem,False if query=='play' else True))
+		xbmcplugin.addDirectoryItems(int(sys.argv[1]),listitems,totalItems=len(listitems))
+		return len(listitems)
+	def getlink(body):
+		movie_id=get_id(body);pattern='<title>.*xx(.+?)xx.*</title>';print 'movie_id %s'%movie_id
+		href=xsearch('<link rel="canonical" href="(.+?)"',body,1)
+		list_episodes=dict(re.findall('class=.*?href="(.+?)".*?>\D*([\d-]+)</',body))
+		tap=list_episodes.get(href);print 'Tap: %s'%tap
+		s=xsearch(pattern,make_request('https://www.fshare.vn/folder/5VNFUPO32P6F'),1).split('-')
+		hd={s[0]:'%s %s'%(s[1],s[2])};data={"secure_token":"1.0","request":'{"movie_id":"%s"}'%movie_id}
+		response=make_post('%smovie/movie_detail'%api,hd,data,'j');print 'Tap %s'%tap
+		if response.get('data') and response['data'].get('list_episode') and len(response['data']['list_episode'])>0:
+			eps=response['data']['list_episode']
+			ids=[(s.get('id'),s.get('vn_subtitle')) for s in eps if s.get('name')==tap or s.get('name')==u'Tập '+tap]
+			if ids:movie_id,sub=ids[0];href='%sgetlink/movie_episode'%api
+			else:href=sub=''
+		else:
+			href='%sgetlink/movie'%api
+			try:sub=response['data']['vn_subtitle'];print 'movie_id %s'%movie_id
+			except:sub=''
+		if href:
+			data["request"]='{"data":[{"type":"facebook","email":"%s"}]}'%myaddon.getSetting('userhayhay')
+			response=make_post('%suser/signup_social_network'%api,hd,data,'j')
+			if response:
+				token=response['data']['token_app'];user_id=response['data']['user_id']
+				data['request']='{"token":"%s","user_id":"%s","movie_id":"%s"}'%(token,user_id,movie_id)
+				print data
+				response=make_post(href,hd,data,'j')
+				try:href=response['data']['link_play'][0]['mp3u8_link']
+				except:href=''
+		return href,sub
 
+	if checkupdate('hayhaytv.cookie',type='day'):hd['Cookie']=login()
+	else:hd['Cookie']=makerequest(joinpath(datapath,'hayhaytv.cookie'))
 	if query=='hayhaytv.vn':
 		name=color['search']+"Search trên hayhaytv.vn[/COLOR]"
-		addir(name,'http://www.hayhaytv.vn/tim-kiem/',icon['icon'],mode=mode,query='search',isFolder=True)
-		body=make_request(home)
-		for href,name in re.findall('menu_fa_text.+?" href="(.+?)".*>(.+?)</a>',body):
-			if name in 'PHIM LẺ-PHIM BỘ-SHOW':
-				addir(namecolor(name),href,icon['hayhaytv'],fanart,mode,page,query='M1',isFolder=True)
-		body=body[body.find('"title_h1_st1"'):body.find('"slider_box_sim slider_clip_box"')]
-		items=re.findall('"title_h1_st1">.{,20}<a.{,20}href="(.+?)".{,20}>(.+?)</a>.{,20}</h2>',body,re.DOTALL)
-		mucs={'su-kien':'q=su-kien&p=eventfilms&key=32386E61&page=1','phim-le':'p=phimle&page=1',
-			'phim-bo':'p=phimbo&page=1','phim-chieu-rap':'p=phimle&phimchieurap&page=1','shows':'p=tvshow&page=1'}
-		for href,name in items:
-			muc=xshare_group(re.search('http://www.hayhaytv.vn/([\w|-]{1,20})',href),1)
-			if muc and mucs[muc]:
-				href='http://www.hayhaytv.vn/ajax_ht.php?'+mucs[muc] if 'su-kien' in href else ajax+'?'+mucs[muc]
-				name=' '.join(s for s in name.replace('\n','').split() if s)
-			else:name=name.replace('JJ','Just Japan')
-			addir(namecolor(name),href,img,fanart,mode,page=1,query='M3' if 'su-kien' in href else 'M2',isFolder=True)
+		addir(name,'http://www.hayhaytv.vn/tim-kiem/',icon['hayhaytv'],fanart,mode,1,'search',True)
+		addir(namecolor("HayhayTV giới thiệu"),'gioithieu',icon['hayhaytv'],fanart,mode,1,'gioithieu',True)
+		adict=json_rw('hayhaytv.json')
+		if not adict.get('mar-r20') or not adict.get('main'):adict=update_home(adict)
+		for href,name in adict['mar-r20']:
+			addir(namecolor(name),href,icon['hayhaytv'],fanart,mode,1,'mainmenu',True)
+		for href,name in adict['main']:
+			addir(namecolor(name),href,icon['hayhaytv'],fanart,mode,1,'submenu',True)
+		if checkupdate('hayhaytv.json',type='day') and not os.path.isfile(joinpath(datapath,'hayhaytv.tmp')):
+			endxbmc();makerequest(joinpath(datapath,'hayhaytv.tmp'),'','w')
+			adict=update_home(adict);delete_files(datapath,mark='hayhaytv.tmp')
 	elif query=='search':make_mySearch('','hayhaytv.vn','','',mode,'get')
 	elif query=="INP":hayhaytv_search(make_mySearch('',url,'','','','Input'))
 	elif url=='hayhaytv.vn':page=1 if 'Trang tiếp theo' not in name else page;hayhaytv_search(query)
-	elif query=='M1':
-		theloai=os.path.basename(url).replace('-','')
+	if query=='gioithieu':
+		adict=json_rw('hayhaytv.json')
+		addDirs([adict.get(s) for s in adict.get('banner_slider')]);setskin()
+	elif query=='mainmenu':
+		theloai=os.path.basename(url).replace('-','');q='filter'
 		if theloai=='shows':theloai='tvshow'
-		body=make_request('http://www.hayhaytv.vn/tim-kiem');pattern='http.+/\w{1,6}-'
-		body=body[body.find(url):];body=body[:body.find('mar-r20')]
-		for href,name in re.findall('href="(.+?)".*?>(.+?)</a></li>',body):
-			if href==url:href='%s?p=%s&page=1'%(ajax,theloai)
-			else:id=re.sub(pattern,'',href);href='%s?p=%s&q=filter&id=%s&page=1'%(ajax,theloai,id)
-			addir(namecolor(name),href,img,fanart,mode,page=1,query='M2',isFolder=True)
-	elif query=='M2':
-		if 'ajax' in url:
-			body=make_post(re.sub('page=\d{1,3}','page=%d'%page,url)).body
-			pattern='tooltip="(.+?)" href="(.+?)">\s.*"(http://img.+?)".*\s.*color">(.*?)<.*\s.*>(.*?)</span>'
-			items=re.findall(pattern,body)
-			ids=dict((re.findall('id="(sticky\d{1,3})".{,250}Số tập[\D]{,30}(\d{1,4})',body,re.DOTALL)))
-			for stic,href,img,name_e,name_v in items:
-				name=name_v+'-'+name_e if name_v else name_e
-				if ids.has_key(stic) and ids[stic].strip()>'1':#? in ids.values()
-					addir(namecolor(name),href,img,fanart,mode,page=1,query='folder'+ids[stic],isFolder=True)
-				else:addir(name,href,img,fanart,mode,page,query='play')
-			if len(items)>31 or ('p=tvshow' in url and len(items)>11):
-				name='%sTrang tiếp theo: trang %s[/COLOR]'%(color['trangtiep'],page+1)
-				addir(name,url,img,fanart,mode,page+1,query,isFolder=True)
-			return
-		elif 'jj' in url:#Just Japan
-			pattern='href="(.+?)">\s.*src="(.+?)".*\s.*\s.*\s.*>(.*?)</a></p>\s.*>(.*?)</a></p>'
-			for href,img,name_e,name_v in re.findall(pattern,make_request(url)):
-				name=name_v+'-'+color['subscene']+name_e+'[/COLOR]' if name_v else name_e
-				addir(name,href,img,fanart,mode,page,query='play')
-	elif query=='M3':
-		body=make_request(url);body=body[body.find('slide_child_div_dt'):];body=body[:body.find('class="paging"')]
-		pattern='href="(.+?)".*\s.*alt="poster phim (.+?)" src="(.+?)"'
-		items=re.findall(pattern,body)
-		for href,name,img in items:
-			if re.search('Tap-\d{1,3}',href):
-				addir(namecolor(name),href,img,fanart,mode,page=1,query='folder',isFolder=True)
-			else:addir(name,href,img,fanart,mode,page,query='play')
-		if len(items)>14 or (len(items)>7 and 'su-kien' in url):
-			temp='trang-' if 'trang-' in url else 'page=';url=re.sub('%s\d{1,3}'%temp,'%s%d'%(temp,page+1),url)
-			name='%sTrang tiếp theo: trang %s[/COLOR]'%(color['trangtiep'],page+1)
-			addir('tt-'+name,url,img,fanart,mode,page+1,query,isFolder=True)
-	elif query[:6]=='folder':
-		if 'xem-show' in url:pattern='href="(.+?)".*src=".+?"\D*(\d{1,3})<'
-		else:pattern='<a class=".*?" href="(.+?)"\D*(\d{1,3})<'
-		resp=make_request(url,resp='o');body=resp.body if resp.status==200 else make_request(resp.headers['location'])
-		items=re.findall(pattern,body)
-		if not query[6:]:
-			json=getdata(xshare_group(re.search('FILM_ID\D{3,7}(\d{3,6})',body),1))
-			if json:query+=json['total_episode'].encode('utf-8')
-		for href,epi in items:
-			addir('Tập %s/%s-%s'%(epi,query[6:],re.sub('\[.?COLOR.{,12}\]','',name)),href,img,fanart,mode,page,query='play')
+		elif theloai=='cliphay':theloai='clip';q='theloai'
+		elif url=='http://www.hayhaytv.vn/trailer':
+			href='http://www.hayhaytv.vn/ajax_hayhaytv.php?p=trailer&page=1'
+			return hayhaytv(name,href,img,fanart,mode,1,'submenu')
+		for href,name in json_rw('hayhaytv.json',key='m-%s'%os.path.basename(url)):
+			addir(namecolor(name),href,img,fanart,mode,1,'submenu',True)
+	elif query=='submenu':
+		body=make_request(url,maxr=3);adict=json_rw('hayhaytv.json')
+		if 'http://www.hayhaytv.vn/su-kien/' in url or 'q=su-kien' in url:
+			ids=re.findall('<a title=".+?" href=".+-(\w{10,20})\.html"',body)
+			if not ids:mes(u'[COLOR red]Hiện tại không có nội dung mục này.[/COLOR]');return 'no'
+			addDirs([adict.get(s) for s in ids])
+			urlnext=home+xsearch('class=.active.+?onclick=.+?"(ajax_ht.php.+?)"',body,1)
+			pagenext=xsearch('page=(\d{1,4})',urlnext,1);pagelast=xsearch('trang-(\d{1,4})-.{,50}Cuối',body,1)
+		else:
+			items=getinfo(body)
+			if not items:mes(u'[COLOR red]Hiện tại không có nội dung mục này.[/COLOR]');return 'no'
+			addDirs(items);urlnext=home+xsearch('class=.active.+?"(ajax_hayhaytv.php.+?)"',body,1)
+			pagenext=xsearch('page=(\d{1,4})',urlnext,1);pagelast=xsearch('Trang \d{1,4}/(\d{1,4})',body,1)
+		if pagenext:
+			name=re.sub('\[.+?\]','',name.split('-')[0].strip())
+			name='%s%s - Trang tiếp theo: trang %s/%s[/COLOR]'%(color['trangtiep'],name,pagenext,pagelast)
+			addir(name,urlnext,img,fanart,mode,page+1,'submenu',True)
+		setskin()
+	elif query=='readfolder':#Phim bo moi: Truy Tìm Kho Báu
+		pages=0;adict=json_rw('hayhaytv.json')
+		if page==1:
+			body=sub_body(make_request(url,headers=hd,maxr=3),'<div id="new_player">','class="content_div"','1')
+			list_episodes=re.findall('class=.*?href="(.+?)".*?>\D*([\d-]+)</',body);items=list()
+			item=adict.get(get_idw(url))
+			if item:vie,eng,href,img,epi,eps,gen,ctry,dur,rat,plot=item
+			else:vie=re.sub('\[.+?\]','',s2u(name));eps=xsearch('\w{0,3}/(\d{1,4})',name,1);eng=epi=gen=ctry=dur=rat=plot=''
+			for href,tap in list_episodes:
+				vi=u'Tập %s/%s%s'%(tap,eps,'-'+vie if vie else '')
+				items.append((vi,eng,href,img,epi,'',gen,ctry,dur,rat,plot))
+			if 'http://www.hayhaytv.vn/xem-show' in url:
+				pages=xsearch("onclick='paging\((\d{1,3})\)'> &raquo",body,1)
+				pages=int(pages) if pages else 0;id=xsearch('episode_(.+?)_unactive',body,1)
+				url='http://www.hayhaytv.vn/tvshow/paging?page=2&q=episode&id=%s&pages=%d'%(id,pages)
+			if pages or len(items)>rows:makerequest(joinpath(datapath,"temp.txt"),str(items),'w')
+		else:
+			try:items=eval(makerequest(joinpath(datapath,"temp.txt")))
+			except:items=[]
+			if 'http://www.hayhaytv.vn/tvshow/paging' in url and items:
+				vie,eng,href,img,epi,eps,gen,ctry,dur,rat,plot=items[0]
+				body=make_post(url.split('?')[0],data=url.split('?')[1],resp='b');items=list()
+				for href,tap in re.findall('class=.*?href="(.+?)".*?>\D*([\d-]+)</',body):
+					vi=re.sub(u'Tập \d{1,4}/',u'Tập %s/'%tap,vie)
+					items.append((vi,eng,href,img,epi,'',gen,ctry,dur,rat,plot))
+				pages=xsearch('pages=(\d{1,4})\Z',url.split('?')[1],1)
+				if pages and int(pages)>page:
+					url=re.sub('page=\d{1,4}&','page=%s&'%str(page+1),url);pages=int(pages)
+				else:pages=0
+		if 'http://www.hayhaytv.vn/tvshow' not in url:
+			pages=len(items)/(rows+1)+1;del items[:rows*(page-1)];del items[rows:]
+		addDirs(items)
+		if pages>page:
+			name=color['trangtiep']+'Trang tiếp theo...trang %d/%d[/COLOR]'%(page+1,pages)
+			addir(namecolor(name),url,img,fanart,mode,page+1,'readfolder',True)
+		setskin()
 	elif query=='play':
-		hd['Cookie']=makerequest(joinpath(data_path,'hayhaytv.cookie'))
-		href,id=getmaxspeedlink(url,hd);sub=''
-		if not href:hd['Cookie']=login();href,id=getmaxspeedlink(url,hd)
-		if href:
-			if id:
-				json=getdata(id)
-				if json:sub=download_subs(json['vn_subtitle'])
-			xbmcsetResolvedUrl(href,json['vn_subtitle'] if sub else '')		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+		print url
+		body=make_request(url,headers=hd,maxr=3);trailer=xsearch("initTrailerUrl = '(.+?)'",body,1)
+		if trailer:xbmcsetResolvedUrl(trailer)
+		elif '/xem-clip/' not in url:
+			if '/xem-show/' in url:mes(u'[COLOR red]Chưa code phần này !!![/COLOR]');return
+			href,sub=getlink(body)
+			if href:
+				if sub and download_subs(sub):mes(u'[COLOR green]Phụ đề của hayhaytv.vn[/COLOR]')
+				xbmcsetResolvedUrl(href,urllib.unquote(os.path.splitext(os.path.basename(sub))[0]))
+			else:mes(u'[COLOR red]Get max link thất bại...[/COLOR]')
+		else:
+			href=xsearch('src="(http://www.youtube.com.+?)"',body,1)
+			if href:play_youtube(href)
+			else:mes('[COLOR red]Link youtube.com find not found ![/COLOR]')
+			
+def xsearch(pattern,string,group,flags=0):
+	research=re.search(pattern,string,flags)
+	if research:
+		try:result=research.group(group)
+		except:result=''
+	else:result=''
+	return result
+			

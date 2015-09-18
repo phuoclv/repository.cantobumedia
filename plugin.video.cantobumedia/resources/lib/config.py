@@ -1,5 +1,6 @@
-hayhaytv_vn = 'http://movies.hayhaytv.vn/'
+hayhaytv_vn = 'http://www.hayhaytv.vn/'
 hdviet_com = 'http://movies.hdviet.com/'
+dangcaphd_com = 'http://dangcaphd.com/'
 
 #url = 'http://api.vietmedia.kodi.vn/play/v1/tivi/play/2'	#vietmedia play
 #url = 'http://api.vietmedia.kodi.vn/xmio/v1/play/2'		#vietmedia movie
