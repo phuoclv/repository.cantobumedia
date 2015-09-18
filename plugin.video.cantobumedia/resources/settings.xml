@@ -21,16 +21,16 @@
 		<setting id="passwordv" type="text" option="hidden" label="Password [COLOR deeppink]vuahd.tv[/COLOR]" default="0914172637"/>		
 	</category>
 	<category label="Thông tin khác">
-		<setting id="danhmucphim" type="labelenum" label="[COLOR blue]Danh mục phim mặc định:[/COLOR]" values="HDOnline|HDViet|HayHayTV|DangCapHD|Tất cả" default="Tất cả"/>
-		<setting id="note" type="text" label="[COLOR red]Danh mục phim mặc định: Tất cả -> Không sử dụng chức năng tự động tìm phim từ server khác[/COLOR]" />		
-		<setting id="hdonline_view" type="bool" label="Tự động tìm phim từ server HDOnline (y/n)" default="true"/>		
-		<setting id="hdviet_view" type="bool" label="Tự động tìm phim từ server HDViet (y/n)" default="true"/>
-		<setting id="hayhaytv_view" type="bool" label="Tự động tìm phim từ server HayHayTV (y/n)" default="true"/>		
-		<setting id="vuahd_view" type="bool" label="Tự động tìm phim từ server VuaHD (y/n)" default="true"/>
-		<setting id="dangcaphd_view" type="bool" label="Tự động tìm phim từ server DangCapHD (y/n)" default="true"/>		
-		<setting id="megabox_view" type="bool" label="Tự động tìm phim từ server Megabox (y/n)" default="true"/>
-		<setting id="phimmoi_view" type="bool" label="Tự động tìm phim từ server PhimMoi (y/n)" default="true"/>		
-		<setting id="phimgiaitri_view" type="bool" label="Tự động tìm phim từ server PhimGiaiTri (y/n)" default="true"/>
+		<setting id="danhmucphim" type="labelenum" label="[COLOR blue]Hiển thị danh mục phim theo server:[/COLOR]" values="HDOnline|HDViet|HayHayTV|DangCapHD|Tất cả" default="Tất cả"/>
+		<setting id="note" type="text" label="[COLOR red]Nếu tùy chọn: Tất cả -> Không tìm kiếm thêm phim từ server bên dưới[/COLOR]" />		
+		<setting id="hdonline_view" type="bool" label="Tự động tìm kiếm thêm phim từ server HDOnline (y/n)" default="true"/>		
+		<setting id="hdviet_view" type="bool" label="Tự động tìm kiếm thêm phim từ server HDViet (y/n)" default="true"/>
+		<setting id="hayhaytv_view" type="bool" label="Tự động tìm kiếm thêm phim từ server HayHayTV (y/n)" default="true"/>		
+		<setting id="vuahd_view" type="bool" label="Tự động tìm kiếm thêm phim từ server VuaHD (y/n)" default="true"/>
+		<setting id="dangcaphd_view" type="bool" label="Tự động tìm kiếm thêm phim từ server DangCapHD (y/n)" default="true"/>		
+		<setting id="megabox_view" type="bool" label="Tự động tìm kiếm thêm phim từ server Megabox (y/n)" default="true"/>
+		<setting id="phimmoi_view" type="bool" label="Tự động tìm kiếm thêm phim từ server PhimMoi (y/n)" default="true"/>		
+		<setting id="phimgiaitri_view" type="bool" label="Tự động tìm kiếm thêm phim từ server PhimGiaiTri (y/n)" default="true"/>
 		<setting id="hdvietresolution" type="labelenum" label="[COLOR blue]Chọn độ phân giải tối đa trên[/COLOR] [COLOR darkorange]hdviet.com[/COLOR]" values="720|1080" default="720"/>
 		<setting label="Chất lượng phim" type="labelenum" id="video_quality" default="Full HD" values="SD|HD|Full HD" visible="false"/>
 		<setting id="sodonghienthi" type="labelenum" label="[COLOR blue]Số dòng hiển thị cho 1 trang[/COLOR]" values="20|30|50" default="30" visible="false"/>
