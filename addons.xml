@@ -1,19 +1,199 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <addons>
 <addon id="plugin.video.cantobumedia" name="Cantobu Media" version="1.0.10" provider-name="phuoclv">
     <requires>
         <import addon="xbmc.python" version="2.1.0" optional="true" />
-        <import addon="script.module.simplejson" />
-        <import addon="script.module.simple.downloader" version="1.9.4" />
-    </requires>
+		<import addon="script.module.simplejson" />
+		<import addon="script.module.simple.downloader" version="1.9.4" />
+	</requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
     </extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Cantobu Media Entertainment</summary>
+		<description>Giải trí trên XBMC/Kodi được viết lại dựa trên addon ITV Plus của tác giả itv member, XShare (thaitni), VietMedia (tinhyeu44), ...</description>
+		<disclaimer>Tất cả nội dung được lấy từ Internet - Tôi hoàn toàn không chịu trách nhiệm về bản quyền hay độ ổn định của chương trình</disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.xsharelite" name="[COLOR green]*[/COLOR]Xshare Lite" version="3.4.4.2" provider-name="thaitni">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0" optional="true" />
+    </requires>
+    <extension point="xbmc.python.module" library="xshare.py" />
     <extension point="xbmc.addon.metadata">
-	<summary>Cantobu Media Entertainment</summary>
-	<description>Giải trí trên XBMC/Kodi</description>
-	<disclaimer></disclaimer>
-	<platform>all</platform>
+        <summary>Xshare - XBMC HD Video</summary>
+		<description lang="en">Tìm và Xem HD Video trên XBMC từ: fshare.vn, 4share.vn, vaphim.com, ifile.tv, phimfshare.com, fptplay.net, hdvietnam.com, megabox.vn, dangcaphd.com, hayhaytv.vn, hdviet.com, pubvn.net, vuahd.tv, phimmoi.net, hdonline.vn, phim3s.net, kenh88.com, phimdata.com, phimsot.com, phim47.com</description>
+		<platform>all</platform>
+		<language>en</language>
+		<license>GNU General Public License - v2</license>
+		<source>https://github.com/thaitni/xbmc.repo.xshare</source>
+		<email>thai@thanhthai.net</email>
     </extension>
 </addon>
+
+<addon id="plugin.video.vietmediaF"
+       name="[COLOR green]*[/COLOR]VietMediaF"
+       version="1.0.11"
+       provider-name="VietMedia">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0" />
+    <import addon="script.module.simple.downloader" version="1.9.4" />
+    <import addon="plugin.video.youtube" version="4.4.10"/> 
+ 	</requires>
+    <extension point="xbmc.python.pluginsource"
+               library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <language>en</language>
+		<summary lang="en">VietMediaF Video Online</summary>
+		<description lang="en">Trung tâm giải trí trực tuyến, xem phim, shows, tivi, ca nhạc, karaoke</description>
+    <disclaimer>Các addon KODI làm ra với mục đích phục vụ cộng đồng miễn phí và các lập trình viên cũng tốn công sức để phục vụ các bạn. Vì vậy, đối với các addon do group làm ra, các bạn xin vui lòng tuân thủ những điều sau:
+- http://vietmediaf.net
+- https://www.facebook.com/groups/vietkodi/
+- Không được sử dụng mã nguồn mà không xin phép tác giả.
+- Các addon trong repository Vietmedia thuộc quyền sở hữu của tác giả và cũng không mong muốn đưa các addon này vào trong các repository khác.
+- Không được thay đổi tên, hoặc các thông tin liên quan đến các add-on trong group.
+- Và có thể thêm các điều khác (chưa nghĩ ra) Biểu tượng cảm xúc smile
+Rất mong các bạn tuân thủ và tạo động lực cho chúng tôi trong quá trình phát triển cũng như duy trì những add-on này.</disclaimer>
+    </extension>
+</addon>
+
+<addon
+  id="plugin.video.lnt.hayhaytv"
+  version="1.0.1"
+  name="[COLOR green]*[/COLOR]HayHayTV"
+  provider-name="lnt900">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>hayhaytv</summary>
+    <description>Watch hayhaytv.vn (Vietnamese) Videos</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon
+  id="plugin.video.lnt.hdviet"
+  version="1.1.7"
+  name="[COLOR green]*[/COLOR]HDViet"
+  provider-name="lnt900">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+  </requires>
+  <extension point="xbmc.python.module" library="default.py" />
+  <extension point="xbmc.addon.metadata">
+    <summary>HDViet</summary>
+    <description>Watch free videos from hdviet.com</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.hkn.hdviet" name="[COLOR green]*[/COLOR]HDViet" version="1.0.0" provider-name="">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.simplejson" optional="true"/>
+		<import addon="script.common.plugin.cache" version="2.5.5"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en"></summary>
+		<description lang="en"></description>
+		<disclaimer lang="en"></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.hkn.hdonline" name="[COLOR green]*[/COLOR]HDOnline" version="1.0.5" provider-name="anhlon">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.framework" version="1.4"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en"></summary>
+		<description lang="en"></description>
+		<disclaimer lang="en"></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.hkn.movihd" name="[COLOR green]*[/COLOR]MoviHD" version="1.0.3" provider-name="anhlon">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.framework" version="1.4"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en"></summary>
+		<description lang="en"></description>
+		<disclaimer lang="en"></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.hkn.phimmoi" name="[COLOR green]*[/COLOR]PhimMoi" version="1.3.8" provider-name="anhlon">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.framework" version="1.4"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en"></summary>
+		<description lang="en"></description>
+		<disclaimer lang="en"></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.hkn.xemphimso"  version="1.0" name="[COLOR green]*[/COLOR]XemPhimSo" provider-name="traitravinh, V137">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0" />
+		<import addon="script.module.requests" version="2.4.3" />
+		<import addon="script.module.beautifulsoup" version="3.2.1" />
+		<import addon="script.module.beautifulsoup4"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="xemphimso.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary>XemPhimSo</summary>
+		<description>XemPhimSo (Vietnamese)</description>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.hkn.phimnhanh" version="1.3" name="[COLOR green]*[/COLOR]PhimNhanh.com" provider-name="V137">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0"/>
+		<import addon="script.module.requests" version="2.6.0"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary>PhimNhanh.com</summary>
+		<description>PhimNhanh.com (Vietnamese)</description>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="plugin.video.hkn.zingtv" name="[COLOR green]*[/COLOR]Zing TV" version="1.0.0" provider-name="">
+	<requires>
+		<import addon="xbmc.python" version="2.6.0"/>
+		<import addon="script.module.simplejson" optional="true"/>
+		<import addon="script.common.plugin.cache" version="2.5.5"/>
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py" />
+	<extension point="xbmc.addon.metadata">
+		<summary lang="en"></summary>
+		<description lang="en"></description>
+		<disclaimer lang="en"></disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
 </addons>
