@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <addons>
-<addon id="plugin.video.cantobumedia" name="[B][COLOR red]Cantobu Media[/COLOR][/B]" version="1.1.6" provider-name="phuoclv">
+<addon id="plugin.video.cantobumedia" name="[B][COLOR red]Cantobu Media[/COLOR][/B]" version="1.1.7" provider-name="phuoclv">
     <requires>
         <import addon="xbmc.python" version="2.1.0" optional="true" />
 		<import addon="script.module.simplejson" />
