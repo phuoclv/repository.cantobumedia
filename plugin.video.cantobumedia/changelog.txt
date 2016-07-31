@@ -1,0 +1,20 @@
+﻿1.1.9 (31/07/2016)
+Fix loi phan Phim Truyen
+
+1.1.8 (18/07/2016)
+Fix loi phan Phim Truyen
+
+1.1.0 (02/07/2016)
+New Update
+
+1.0.9 (25/09/2015)
+New Update
+
+1.0.7 (05/10/2015)
+New Update
+
+1.0.5 (18/09/2015)
+New Update
+
+1.0.0 (01/09/2015)
+Initial release
