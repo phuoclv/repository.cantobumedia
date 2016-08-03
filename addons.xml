@@ -13,6 +13,7 @@
 		<summary>Cantobu Media Entertainment</summary>
 		<description>Giải trí trên XBMC/Kodi được viết lại dựa trên addon ITV Plus của tác giả itv member, XShare (thaitni), VietMedia (tinhyeu44), ...</description>
 		<disclaimer>Tất cả nội dung được lấy từ Internet - Tôi hoàn toàn không chịu trách nhiệm về bản quyền hay độ ổn định của chương trình</disclaimer>
+		<source>https://github.com/phuoclv/repository.cantobumedia</source>
 		<platform>all</platform>
 	</extension>
 </addon>
@@ -258,6 +259,7 @@ Rất mong các bạn tuân thủ và tạo động lực cho chúng tôi trong 
 		<summary>Cantobu Media Entertainment</summary>
 		<description>Giải trí trên XBMC/Kodi được viết lại dựa trên addon ITV Plus của tác giả itv member, XShare (thaitni), VietMedia (tinhyeu44), ...</description>
 		<disclaimer>Tất cả nội dung được lấy từ Internet - Tôi hoàn toàn không chịu trách nhiệm về bản quyền hay độ ổn định của chương trình</disclaimer>
+		<source>https://github.com/phuoclv/repository.cantobumedia</source>
 		<platform>all</platform>
 	</extension>
 </addon>
