@@ -158,11 +158,11 @@ def get_fshare(url):
 	logout_url = 'https://www.fshare.vn/logout'
 	download_url = 'https://www.fshare.vn/download/get'
 
-	username = ''#myaddon.getSetting('username_fshare')
-	password = ''#myaddon.getSetting('password_fshare')
+	username = myaddon.getSetting('usernamef')
+	password = myaddon.getSetting('usernamef')
 
 	try:
-		url_account = 'http://aku.vn/linksvip'
+		url_account = 'http://www.aku.vn/linksvip'
 		headers = { 
 			'Referer'			: 'http://aku.vn/linksvip',
 			'User-Agent'		: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
@@ -186,8 +186,8 @@ def get_fshare(url):
 		except Exception as e:
 			pass
 
-	#print 'username: '+username
-	#print 'password: '+password
+	print 'username: '+username
+	print 'password: '+password
 	if len(username) == 0  or len(password) == 0:
 		alert(u'Bạn chưa nhập tài khoản fshare'.encode("utf-8"))
 		return

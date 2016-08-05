@@ -15,11 +15,15 @@ rows=30
 sys.path.append(os.path.join(home,'resources','lib'));from urlfetch import get,post;import getlink;import xshare;
 from servers import serversList,fshare,megabox,hdviet,hdonline,hayhayvn;
 from utils import xsearch,xrw,xget
-from config import hayhaytv_vn,hdviet_com,dangcaphd_com,megabox_vn,phimgiaitri_vn,phimmoi_net, hdonlinevn,megaboxvn,vuahdtv,phimmoinet, csn,csn_logo, nct,nct_logo
-from setting import encode2, decode, alert, notify, myaddon
+from setting import encode, decode, alert, notify, myaddon
 
-#reload(sys);
-#sys.setdefaultencoding("utf8")
+csn = 'http://chiasenhac.com/'
+csn_logo ='http://chiasenhac.com/images/logo_csn_300x300.jpg'
+nct = 'http://m.nhaccuatui.com/'
+nct_logo ='http://stc.id.nixcdn.com/10/images/logo_600x600.png'
+
+reload(sys);
+sys.setdefaultencoding("utf8")
 
 www={'hdonline':'[hdonline.vn]','vuahd':'[vuahd.tv]','hdviet':'[http://movies.hdviet.com/]','hayhaytv':'[http://www.hayhaytv.vn/]','dangcaphd':'[http://dangcaphd.com/]','megabox':'[http://phim.megabox.vn/]','phimmoi':'[vuahd.tv]','hdcaphe':'[http://phim.hdcaphe.com/]','phimgiaitri':'[http://phimgiaitri.vn/]'}
 color={'trangtiep':'[COLOR lime]','cat':'[COLOR green]','search':'[COLOR red]','phimbo':'[COLOR tomato]','phimle':'[COLOR yellow]'}
@@ -35,6 +39,7 @@ try:
 	local=xshare.s2u(myaddon.getSetting('thumuccucbo'))
 	if not os.path.exists(local):local=xshare.joinpath(datapath,'local')
 except:local=xshare.joinpath(datapath,'local')
+print local
 
 def setViewMode(view_mode = '2'):
 	skin_used = xbmc.getSkinDir()
@@ -86,15 +91,19 @@ def fixSearchss(titleEnVn, title2):
 
 	arr = titleEnVn.split('[]')	
 	titleEn = arr[0]
-	titleVn = arr[1]
+	titleVn = arr[1]	
+	strYear = arr[2]
 	
-	try:strYear = arr[2]
-	except:strYear=''
 	
-	if len(strYear) and len(titleVn):
+	if len(strYear) > 0 and len(titleVn) > 0:
 		if (titleEn in title2 and titleVn in title2 and strYear in title2):return True
-	elif len(titleVn):
-		if (titleEn in title2 and titleVn in title2):return True
+		else:return False
+	elif len(strYear) > 0:
+		if (titleEn in title2 and strYear in title2):return True
+		else:return False
+	elif len(titleVn) > 0:
+		if (titleEn in title2 and titleVn in title2):return True	
+		else:return False
 	else:
 		if (titleEn in title2):return True		
 		else:return False
@@ -111,23 +120,25 @@ def Home():
 		if not os.path.isfile(file):xshare.makerequest(file,xmlheader,'w')
 
 
-	content = GetUrl(decode('phuoclv', '2Nzp352bpdPJ4-PSzuvj0OTfkc_l3ZfNsbCvpb3N4-SR5OPc'))
+	content = GetUrl(decode('phuoclv', '2Nzp352bpdPJ4-PSzuvj0OTfkc_l3ZfNsbCvpb3N4-SR5OPc'))	
 	match=re.compile('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(content)
 	for title,url,thumbnail in match:
-		title = '[B]'+title+'[/B]'
+		title = title.upper()
 		if 'MYPLAYLIST' in url or 'tvcatchup' in url:
 			pass
 		elif 'Setting' in url:			
 			addItem(title,url,'menu_group',thumbnail, False)		
 		else:
-			addItem(title,url,'menu_group',thumbnail)
-			
-	setViewMode('3')
+			addItem(title,url,'menu_group',thumbnail)			
 		
 def Menu_Group(url):
 	if 'Setting' in url:
 		xbmcaddon.Addon().openSettings()
 		return
+	elif 'SEARCH' in url:
+		addItem('Tìm kiếm phim','TIMPHIM','search','')
+		addItem('Tìm Video Chia Sẻ Nhạc','TimVideoCSN','search',csn_logo)
+		addItem('Tìm Video Nhạc Của Tui','TimVideoNCT','search',nct_logo)
 	elif 'LOCAL' in url:
 		Local(name='',url='thumuccucbo',img='',fanart='',mode='local',query='')
 	elif 'REMOTE' in url:
@@ -195,7 +206,6 @@ def Menu_Group(url):
 			if 'PHIM-LE' in url:href='http://phim.megabox.vn/phim-le'			
 			else:href='http://phim.megabox.vn/phim-bo'				
 			Category(url=href,mode=mode)			
-			setViewMode('1')
 		elif danhmucphim == 'HDOnline':	
 			if 'PHIM-LE' in url:href='http://m.hdonline.vn/danh-sach/phim-le.html'			
 			else:href='http://m.hdonline.vn/danh-sach/phim-bo.html'
@@ -203,58 +213,28 @@ def Menu_Group(url):
 		elif danhmucphim == 'HDViet':	
 			if 'PHIM-LE' in url:href='http://movies.hdviet.com/phim-le.html'			
 			else:href='http://movies.hdviet.com/phim-bo.html'
-			Category(url=href,mode=mode)		
-			
-		setViewMode('1')
-		
-	elif 'MenuTivi' in url:
-		content = GetUrl(url)
-		match=re.compile('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(content)
-		for title,url,thumbnail in match:
-			addItem(title,url,'index',thumbnail)
-		setViewMode('3')
-	elif 'MenuMusic' in url:
-		content = GetUrl(url)
-		match=re.compile('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(content)
-		for title,url,thumb in match:
-			if 'nhaccuatui.com' in url or 'chiasenhac.com' in url:
-				addItem(title,url,'category',thumb)				
-			else:
-				addItem(title, url, 'index', thumb)								
-		setViewMode('3')
-	elif 'MenuShows' in url or 'MenuAddons' in url or 'MenuShare' in url or 'MenuSport' in url or 'MenuChildren' in url:
-		content = GetUrl(url)
-		match=re.compile('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(content)
-		for title,url,thumbnail in match:
-			addItem(title,url,'index',thumbnail)
-		setViewMode('3')
-		
-	elif 'MenuTube' in url or 'Collection' in url:
-		content = GetUrl(url)
-		names = re.compile('<name>(.+?)</name>\s*<thumbnail>(.+?)</thumbnail>').findall(content)
-		for name,thumb in names:
-			addItem(name, url, 'index', thumb)
-			
-		if 'MenuTube' in url: setViewMode('3')
-		else: setViewMode('1')
-		
-	elif 'SEARCH' in url:
-		addItem('Tìm kiếm phim','TIMPHIM','search','')
-		addItem('Tìm Video Chia Sẻ Nhạc','TimVideoCSN','search',csn_logo)
-		addItem('Tìm Video Nhạc Của Tui','TimVideoNCT','search',nct_logo)
-		setViewMode('2')
-				
+			Category(url=href,mode=mode)							
+	else:
+		if 'MenuShare' in url or 'MenuTube' in url or 'Collection' in url:
+			content = GetUrl(url)
+			names = re.compile('<name>(.+?)</name>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(content)
+			if len(names)<1:names = re.findall('<name>(.+?)</name>\s*()<thumbnail>(.*?)</thumbnail>',content)
+			for name,href,thumb in names:
+				if href=='':href=url
+				addItem(name, href, 'index', thumb)				
+		else:
+			content = GetUrl(url)
+			match=re.compile('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(content)
+			for title,href,thumb in match:
+				if 'nhaccuatui.com' in href or 'chiasenhac.com' in href:
+					addItem(title,href,'category',thumb)				
+				else:
+					addItem(title, href, 'index', thumb)								
+								
 def Index(url,name):
 	xmlcontent = GetUrl(url)
-	if 'FSHARE' in url:
-		match = re.compile('<a .+? href="(.+?)" img="(.+?)" fanart="">(.+?)</a>').findall(xmlcontent)
-		for link, thumb, title in match:
-			if 'folder' in link:
-				addItem('*'+title, link, 'episodes', thumb)
-			else:
-				addItem('-'+title, link, 'stream', thumb, False)
-		setViewMode('1')
-	elif 'OneTV' in url:
+				
+	if 'OneTV' in url:
 		match = re.compile('"channelName": "(.+?)",\s*"channelNo": "(\d+)",\s*"channelURL": "(.+?)",').findall(xmlcontent)
 		for title, stt, link in match:
 			addLink( stt + ' . '  + title, link, 'stream', 'http://truyenhinhfpthanoi.com/uploads/logo.png')			
@@ -263,36 +243,41 @@ def Index(url,name):
 		#match = re.compile('#EXTINF.+,(.+)\s(.+?)\s').findall(xmlcontent)
 		for name, url in match:
 			addLink(name.replace('TVSHOW - ','').replace('MUSIC - ',''), url, 'stream', iconimage)
-	elif 'MenuCollection.xml' in url or 'MenuTube.xml' in url:#mytubetube, bo suu tap
+	elif 'MenuCollection.xml' in url or 'MenuTube.xml' in url or 'LIVESHOWS.xml' in url:#mytubetube, bo suu tap
+		name = name.replace('(','').replace(')','')
+		xmlcontent = xmlcontent.replace('(','').replace(')','')
+	
 		body=xsearch('<name>'+name+'</name>(.+?)</channel>',xmlcontent,1,re.DOTALL)
 		
 		items = re.findall('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>',body,re.DOTALL)
 		for title, link, thumb in items:
 			if 'MenuTube' in url:
 				addItem(title, link, 'episodes', thumb)
+			if 'LIVESHOWS.xml' in url:
+				addItem(title, link, 'stream', thumb, False)
 			else:#bo suu tap
 				addItem(title, '', 'serverlist&query='+link, thumb)	
 			
-	elif 'xml' in url:#tivi
+	elif '/TV/' in url:#tivi
 		items = re.compile('<channel>\s*<name>.+?</name>((?s).+?)</channel>').findall(xmlcontent)
 		for item in items:	
 			match = re.compile('<title>(.*?)</title>\s*<link>(.*?)</link>\s*<thumbnail>(.*?)</thumbnail>').findall(item)
 			for title, link, thumb in match:
-				addLink(title, link, 'stream', thumb)
-		setViewMode('3')
-	
-	
-def IndexLocal(url):
-	xmlcontent = GetUrl(url)
-	if 'xml' in url:
-		match = re.compile('<a .+? href="(.+?)" img="(.+?)" fanart="">(.+?)</a>').findall(xmlcontent)
-		for link, thumb, title in match:
-			if 'folder' in link:
-				addItem(title, link, 'episodes', thumb)
-			else:
-				addLink(title, link, 'stream', thumb)
-	setViewMode('1')			
+				addLink(title, link, 'stream', thumb)		
+	elif '.xml' in url or '/FSHARE/' in url or 'fshare.vn' in url:#.xml: Thu muc cuc bo,
+		if 'fshare.vn' in url: body=GetUrl(resolve_url(url))#get file .xml
+		else:body=xmlcontent
+				
+		items = re.compile('<a.+id="(.*?)".+href="(.+?)".+img="(.*?)".+fanart="(.*?)".*>(.+?)</a>').findall(body)
+		if len(items)<1:items = re.findall('.+()href="(.+?)".+img="(.*?)".*()>(.+?)</a>',body)
+		if len(items)<1:items = re.findall('.+()href="(.+?)".*()()>(.+?)</a>',body)
 		
+		for id,href,img,fanart,name in items:
+			if 'folder' in href:
+				addItem('*'+name, href, 'episodes', img)
+			else:
+				addItem('-'+name, href, 'stream', img, False)
+			
 def Category(url, mode='', name='', query=''):
 	moi_cap_nhat = '[B]Mới cập nhật[/B]'
 	if 'hdonline.vn' in url:
@@ -337,7 +322,7 @@ def Category(url, mode='', name='', query=''):
 						
 	elif 'PhimMoi' in url:
 		addItem(color['search']+'Tìm kiếm kho phim PhimMoi[/COLOR]','PhimMoi','search',icon['phimmoi'])
-		body=xshare.make_request(phimmoi_net)
+		body=xshare.make_request('http://www.phimmoi.net/')
 		content=xshare.xsearch('<ul id=".+?"(.+?)</ul></div>',body,1)
 		for title in re.findall('<a>(.+?)</a>',content):
 			addLink('[B]'+title+'[/B]',"",0,img)
@@ -348,10 +333,10 @@ def Category(url, mode='', name='', query=''):
 			query=gen.get(re.sub('\[/?COLOR.*?\]|\(.+?\)','',title).strip())
 			pattern='<a href="(%s/.*?)">(.+?)</a>'%query
 			for href,title in re.findall(pattern,content_):
-				xshare.addir('- '+title,phimmoi_net+href,icon['phimmoi'],mode='category',isFolder=True)
+				xshare.addir('- '+title,'http://www.phimmoi.net/'+href,icon['phimmoi'],mode='category',isFolder=True)
 						
 		for href,title in re.findall('<a href="([\w|-]+/|http://www.phimmoi.net/tags/.*?)">(.+?)</a>',content):
-			if 'tags' not in href:href=phimmoi_net+href
+			if 'tags' not in href:href='http://www.phimmoi.net/'+href
 			xshare.addir('[B]'+title+'[/B]',href,icon['phimmoi'],mode='category',isFolder=True)
 
 			content_=xshare.xsearch('<ul id=".+?"(.+?)</ul></div>',body,1)
@@ -360,15 +345,8 @@ def Category(url, mode='', name='', query=''):
 			pattern='<a href="(%s/.*?)">(.+?)</a>'%query
 			for href,title in re.findall(pattern,content_):
 				if len(href)>8:	#bỏ danh mục phim-le, phim-bo
-					xshare.addir('- '+title,phimmoi_net+href,icon['phimmoi'],mode='category',isFolder=True)					
-	
-	
-	elif 'ott.thuynga' in url:
-		match=menulist(dataPath+'/data/category.xml')
-		for title,url,thumbnail in match:	  
-			if 'ott.thuynga' in url:
-				addItem(title,url,'episodes',thumbnail)
-			else:pass				
+					xshare.addir('- '+title,'http://www.phimmoi.net/'+href,icon['phimmoi'],mode='category',isFolder=True)					
+		
 	elif 'chiasenhac' in url:
 		content=GetUrl(url)
 		addItem(color['search']+'Tìm kiếm[/COLOR]','TimVideoCSN','search',csn_logo)	
@@ -406,7 +384,6 @@ def Category(url, mode='', name='', query=''):
 			addItem(moi_cap_nhat,'','category&query='+query+'serverkhac',"")
 	
 		Search_Result(url, mode=mode, query=query)
-	setViewMode('1')
 
 def episodes(url, name='', page=0):
 	if 'hdonline.vn' in url :
@@ -435,7 +412,6 @@ def episodes(url, name='', page=0):
 				else:continue
 				url = url.replace('tv-series/','')+'-%s'%tap
 				url = url+'/watch'
-				url = vuahdtv + url.replace('/', '%2F')			
 				xshare.addir(title,url,img,'fanart',mode='16',isFolder=False)		
 	elif 'hdviet.com' in url :
 		url = query		
@@ -597,7 +573,7 @@ def Local(name,url,img,fanart,mode,query):
 				
 			file_ext=os.path.splitext(filenamefullpath)[1][1:].lower()
 			if file_ext=='xml':
-				addItem(name,filenamefullpath,'indexlocal',icon['icon'])
+				addItem(name,filenamefullpath,'index',icon['icon'])
 			else:pass
 		else:
 			name='[B]'+filename+'[/B]'
@@ -665,11 +641,12 @@ def ServerList(name, url, mode, page, query, img):
 			strYear = xsearch('Năm phát hành:</span> .+?-.+?-(.+?)</li>',GetUrl(href))
 			title = title + ' (' + strYear + ')'
 		else:strYear=''
-		print '-'+href,title	
 		
-		if fixSearchss(strTitle, title) and danhmucphim not in href: # xu ly tim kiem cho nhieu ket qua		
+		if '/tag' in href or '/download' in href:continue
+		if fixSearchss(strTitle, title) and danhmucphim.lower() not in href: # xu ly tim kiem cho nhieu ket qua		
 			isFolder=True
-			if 'bilutv.com' in href:			
+			if 'bilutv.com' in href:
+				title = '[BiluTV] ' + title
 				if '/xem-phim/' in href:v_mode='play'
 				elif '/phim/' in href:v_mode='folder'
 				elif '/tag/' in href:v_mode='page'
@@ -717,12 +694,11 @@ def ServerList(name, url, mode, page, query, img):
 					href=plg+href
 			elif 'mphim.net' in href:				
 				title = '[MPhim] ' + title
-				if 'download-phim' in href:continue
 				v_mode='eps'					
 			else:
 				title = domain + ' ' + title
 				v_mode= 'episodes'
-				#continue
+				continue
 				
 			if 'plugin' not in href and 'megabox.vn' not in href: href='plugin://plugin.video.xshare/?mode='+str(m)+'&name='+title+'&url='+href+'&img='+img+'&query='+v_mode+'&page=1'
 			addItem(title,href,v_mode,img,isFolder)		
@@ -739,7 +715,6 @@ def ServerList(name, url, mode, page, query, img):
 		url='http://movies.hdviet.com/tim-kiem.html?keyword=%s'%search_string
 		Search_Result(url, mode, query)	
 	if danhmucphim <> 'HayHayTV':
-		url=hayhaytv_vn+'tim-kiem/%s/trang-1'%search_string
 		url='http://www.hayhaytv.vn/tim-kiem.html?term='+search_string		
 		#Search_Result(url, mode, query)	
 	if danhmucphim <> 'DangCapHD':
@@ -754,7 +729,7 @@ def ServerList(name, url, mode, page, query, img):
 		Search_Result(url, mode, query)	
 		
 	if danhmucphim <> 'PhimGiaiTri':
-		url = phimgiaitri_vn+'result.php?type=search&keywords='+search_string      
+		url = 'http://phimgiaitri.vn/result.php?type=search&keywords='+search_string      
 		try:Search_Result(url, mode, query)	
 		except:pass
 						
@@ -805,7 +780,7 @@ def Search_Result(url, mode='', query=''):
 			addItem(title,href,mode_query,img,isFolder)		
 		try:
 			items = re.compile('class="next"><a href="(.+?)">').findall(body)
-			addItem(color['trangtiep']+'Trang tiếp theo[/COLOR]', megabox_vn + items[0],'search_result&query='+query,icon['next'])
+			addItem(color['trangtiep']+'Trang tiếp theo[/COLOR]', 'http://phim.megabox.vn/' + items[0],'search_result&query='+query,icon['next'])
 		except:pass					
 	elif 'hdviet.com' in url:
 		b=xshare.xread(url)
@@ -906,12 +881,8 @@ def Search_Result(url, mode='', query=''):
 			else:
 				name = '[PhimGiaiTri] ' + name
 				v_mode='12'			
-			href = phimgiaitri_vn+href+'/Tap-1.html'
-			addLink(name,href,'stream',phimgiaitri_vn+img)
-			#xshare.addir(href,href,phimgiaitri_vn+img,'fanart',mode='stream',page=1,query='play',isFolder=False)
-			
-			#href = phimgiaitri_vn  + 'http:%2F%2Fphimgiaitri.vn%2F' + href.replace('/', '%2F')
-			#xshare.addir(href,href,phimgiaitri_vn+img,'fanart',mode='16',page=1,query='play',isFolder=False)
+			href = 'http://phimgiaitri.vn/'+href+'/Tap-1.html'
+			addLink(name,href,'stream','http://phimgiaitri.vn/'+img)
 
 		items = re.compile('<a style=\'text-decoration:none\' href=\'([^\']*).html\'>\s*<img style=.+?src=(.+?) ><div class=\'text\'>\s*(.+?)\s*</div><table style.+?:0px\'>(.+?)\s*</font>.+?\'> (.+?)</font>').findall(content)
 		for href,img,eps,namevn,nameen in items:		
@@ -925,9 +896,8 @@ def Search_Result(url, mode='', query=''):
 				else:
 					name = '[PhimGiaiTri] ' + name
 					v_mode='12'		
-				href = phimgiaitri_vn+href+'/Tap-1.html'
-				addLink(name,href, 'stream',phimgiaitri_vn+img)					
-				#xshare.addir(name,url,phimgiaitri_vn+img,'fanart',v_mode='play',page=1,isFolder=False)	
+				href = 'http://phimgiaitri.vn/'+href+'/Tap-1.html'
+				addLink(name,href, 'stream','http://phimgiaitri.vn/'+img)					
 			else : 
 				if query=='':
 					name = color['phimbo'] + name + '[/COLOR]'
@@ -938,12 +908,12 @@ def Search_Result(url, mode='', query=''):
 				else:
 					name = '[PhimGiaiTri] ' + name
 					v_mode='120'	
-				href = phimgiaitri_vn+href+'/Tap-1.html'
-				xshare.addir(name,href,phimgiaitri_vn+img,'fanart',mode='episodes',page=1,isFolder=True)	
+				href = 'http://phimgiaitri.vn/'+href+'/Tap-1.html'
+				xshare.addir(name,href,'http://phimgiaitri.vn/'+img,'fanart',mode='episodes',page=1,isFolder=True)	
 								
 		#items = re.compile("<a  href='(.+?)'>(\d+)  <\/a>").findall(content) 		
 		#for url,name in items:
-		  #addItem('[COLOR lime]Trang tiếp theo '+name+'[/COLOR]',phimgiaitri_vn+href.replace(' ','%20'),'search_result',icon['next'])
+		  #addItem('[COLOR lime]Trang tiếp theo '+name+'[/COLOR]','http://phimgiaitri.vn/'+href.replace(' ','%20'),'search_result',icon['next'])
 		#except:pass
 										
 	elif 'chiasenhac' in url:
@@ -968,16 +938,6 @@ def Search_Result(url, mode='', query=''):
 		for url, name in match:	
 			addItem(color['trangtiep']+name+'[/COLOR]',url,mode if mode=='episodes' else 'search_result',icon['next'])					
 
-def menulist(homepath):
-	try:
-		mainmenu=open(homepath, 'r')  
-		link=mainmenu.read()
-		mainmenu.close()
-		match=re.compile("<title>([^<]*)<\/title>\s*<link>([^<]+)<\/link>\s*<thumbnail>(.+?)</thumbnail>").findall(link)
-		return match
-	except:
-		pass
-	
 def resolve_url(url):
 	link='';subtitle = ''
 	if 'xemphimso' in url:
@@ -1066,6 +1026,7 @@ def resolve_url(url):
 	elif 'fshare.vn' in url:
 		try:
 			link = getlink.get(url)
+			if '.xml' in link: return link
 		except:
 			fs=fshare(myaddon.getSetting('usernamef'),myaddon.getSetting('passwordf'))
 			if fs.logged is None:return 'fail'
@@ -1077,7 +1038,8 @@ def resolve_url(url):
 			fs.logout()
 			if not direct_link:xshare.mess('Sorry! Potay.com','fshare.vn');return 'fail'
 			elif direct_link in 'notfound-fail':return 'fail'
-			else:link=direct_link		
+			else:link=direct_link					
+			if '.xml' in link: return link
 	else:
 		link = url		
 		
@@ -1136,10 +1098,7 @@ def addItem(name,url,mode,iconimage,isFolder=True):
 		u = 'plugin://plugin.video.youtube/%s/%s/' % (url.split( '/' )[-2], url.split( '/' )[-1])
 		ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = True)
 		return ok		
-	if ('plugin://plugin' in url):
-		u = url
-		ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = True)
-		return ok
+	if ('plugin://plugin' in url):u = url
 	if not isFolder:
 		liz.setProperty('IsPlayable', 'true')			
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
@@ -1185,7 +1144,6 @@ except:pass#urllib.unquote
 print "Main---------- Mode: "+str(mode),"URL: "+str(url),"Name: "+str(name),"query: "+str(query),"page: "+str(page),"img: "+str(img)
 if not mode:Home()
 elif mode == 'index':Index(url,name)
-elif mode == 'indexlocal':IndexLocal(url)
 elif mode == 'menu_group':Menu_Group(url)
 elif mode == 'category':Category(url, mode, name, query)
 elif mode == 'episodes':episodes(url, name)
@@ -1195,5 +1153,10 @@ elif mode == 'search_result':Search_Result(url, mode, query)
 elif mode == 'search':Search(url)	
 elif mode=='stream':resolve_url(url)
 elif 'serverlist' in mode:ServerList(name, url, mode, page, query, img)	
+
+if not mode or 'MenuTube' in url or 'MenuTivi' in url or '/TV/' in url:
+	try:
+		xbmc.executebuiltin('Container.SetViewMode(500)')# Thumbnails
+	except:pass
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -1,4 +1,7 @@
-﻿1.2.3 (03/08/2016)
+﻿1.2.3 (05/08/2016)
+Thay doi giao dien chinh
+
+1.2.2 (03/08/2016)
 Fix loi phan Phim Truyen
 
 1.0.0 (01/09/2015)
