@@ -10,6 +10,8 @@ tempfolder=xbmc.translatePath('special://temp')
 xsharefolder=urllib2.os.path.join(tempfolder,'xshare')
 icon=urllib2.os.path.join(profile,'icon','icon.png')
 
+hd={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:41.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/600.1.4 Gecko/20100101 Firefox/41.0'}	
+
 class myaddon:
     def __init__(self):
 		self.addon			= xbmcaddon.Addon()
@@ -27,6 +29,11 @@ class myaddon:
 		self.icon_folder	= urllib2.os.path.join(self.data_path,'icon')
 		self.icon			= urllib2.os.path.join(self.icon_folder,'icon.png')
 
+def joinpath(p1,p2):
+	try:p=os.path.join(p1,p2)
+	except:p=os.path.join(p1,s2u(p2))
+	return p		
+		
 def filetime(fn):#return hour
 	fn=urllib2.os.path.join(xsharefolder,fn)
 	t=urllib2.os.path.getmtime(fn) if urllib2.os.path.isfile(fn) else 0
@@ -68,11 +75,55 @@ def xcookie(cookie=None):
 	else:ck=urllib2.HTTPCookieProcessor();urllib2.install_opener(urllib2.build_opener(ck))
 	return ck
 	
-def xread(url,headers={'User-Agent':'Mozilla/5.0'},data=None):
-	req=urllib2.Request(url,data,headers)
-	try:res=urllib2.urlopen(req, timeout=30);b=res.read();res.close()
+def make_request(url,headers=hd,resp='b',maxr=0):
+	try:
+		if maxr==0:response=get(url,headers=headers)#,timeout=2)
+		else:response=get(url,headers=headers,max_redirects=maxr)#,timeout=2)
+		if resp=='o':resp=response
+		else:
+			if resp=='j':resp=response.json
+			elif resp=='s':resp=response.status
+			elif resp=='u':resp=response.text
+			elif resp=='c':resp=response.cookiestring
+			else:resp=response.body
+			response.close()
+	except:
+		if resp=='j':resp=dict()
+		elif resp=='s':resp=500
+		else:resp=''
+		if 'vaphim.com' not in url:
+			link=xsearch('//(.{5,20}\.\w{2,3})',s2u(url))
+			if not link:link=url
+			mess(u'Lỗi kết nối tới: %s!'%xsearch('//(.{5,20}\.\w{2,3})',s2u(url)),'make_request')
+		print 'Lỗi kết nối tới: %s!'%u2s(url);
+	return resp#unicode:body=response.text
+
+def make_post(url,headers=hd,data='',resp='o'):
+	try:
+		if data:response=post(url=url,headers=headers,data=data,timeout=10)
+		else:response=post(url=url,headers=headers,timeout=10)
+		if resp=='b':response=response.body
+		elif resp=='j':response=response.json
+	except:
+		mess(u'Post link error: %s!'%s2u(url),'make_post');print 'Post link error: %s'%u2s(url)
+		response={} if resp=='j' else ''
+	return response
+
+def xread(url,hd={'User-Agent':'Mozilla/5.0'},data=None):
+	req=urllib2.Request(url,data,hd)
+	try:res=urllib2.urlopen(req, timeout=20);b=res.read();res.close()
 	except:b=''
 	return b
+
+def makerequest(file,body='',attr='r'):
+	file=s2u(file)
+	if attr=='r':
+		try:f=open(file);body=f.read();f.close()
+		except:body=''
+	else:
+		try:f=open(file,attr);f.write(body);f.close()
+		except:mess(u'Lỗi ghi file: %s!'%s2u(os.path.basename(file)),'makerequest');body=''
+	return body
 
 def xget(url,data=None,timeout=30):#b.getcode();b.headers.get('Set-Cookie');b.geturl()
 	try:b=urllib2.urlopen(url,data,timeout)

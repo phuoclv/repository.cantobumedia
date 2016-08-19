@@ -159,7 +159,7 @@ def get_fshare(url):
 	download_url = 'https://www.fshare.vn/download/get'
 
 	username = myaddon.getSetting('usernamef')
-	password = myaddon.getSetting('usernamef')
+	password = myaddon.getSetting('passwordf')
 
 	try:
 		url_account = 'http://www.aku.vn/linksvip'
