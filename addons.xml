@@ -36,50 +36,6 @@
 	</extension>
 </addon>
 
-
-<addon id="plugin.video.live.streamspro"
-       name="LiveStreamsPro"
-       version="2.6.7"
-       provider-name="Shani">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="script.module.beautifulsoup" version="3.2.1"/>
-    <import addon="script.module.simple.downloader" version="0.9.4"/>
-    <import addon="script.module.beautifulsoup4" />
-    <import addon="script.module.requests" />
-    <import addon="script.module.httplib2" />
-    <import addon="script.module.liveresolver" version="0.1.24" optional="true"/>
-    <import addon="script.module.youtube.dl" optional="true"/>
-    <import addon="plugin.video.youtube" optional="true" />
-    <import addon="script.module.urlresolver" optional="true"/>
-    <import addon="script.module.simplejson" />    
-     <import addon="script.module.livestreamer" optional="true"/>
-     <import addon="script.module.pyamf" optional="true"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-    <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>livestreamspro- shamelessly forked from livestreams but added many thinks</summary>
-    <description>
-        In addition to what livestreams allowed you to do, you can now,
-        1. call regex in regex,
-        2. multiple regex in page, regex in session, also htmlunescape responses
-        3. create session from one regex and pass onto next in line
-        4. save sessions to a file and open again later
-        5. write python code in .py file, put in the profile directory and then call from your regex.
-        6. use epoctime, guid and unpack as functions already defined.
-        7. Use it to post values to the pages to get the proper responses
-        8. support many headers, like origin, X-Requested-With
-        9. you can now append cookies in response and then read in regex using includeheaders
-        10. You can now link to another web url via your xml using externallink
-        11. support for google captcha, now you can show and then post the text
-        
-    </description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.f4mTester" version="2.6.2" name="f4mTester" provider-name="Shani">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -94,72 +50,6 @@
         <platform>all</platform>
     </extension>
 </addon>
-
-<addon id="plugin.video.p2psport" name="P2P Sport" version="0.1.4" provider-name="natko1412,Extracsaba">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="script.module.addon.common" version="2.0.0" />
-    <import addon="script.module.requests" />
-    <import addon="script.module.beautifulsoup" version="3.2.1"/>
-    <import addon="script.module.mechanize" version="0.2.6"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-    <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Watch p2p sports in Kodi</summary>
-    <platform>all</platform>
-    <forum>forums.tvaddons.ag</forum>
-  </extension>
-</addon>
-
-<addon id="plugin.video.castaway" name="Castaway" version="0.2.8" provider-name="natko1412">
-	<requires>
-		<import addon="xbmc.python" version="2.1.0"/>
-		<import addon="script.module.beautifulsoup" version="3.2.1"/>
-		<import addon="script.module.requests"  />
-    	<import addon="script.module.addon.common" />
-		<import addon="script.module.urlresolver" />
-		<import addon="script.module.liveresolver"  />
-		<import addon="script.module.livestreamer" />		    	
-	</requires>
-	<extension point="xbmc.python.pluginsource" library="default.py">
-		<provides>video</provides>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary lang="en">Just a castaway.</summary>
-		<description lang="en">Visit TVADDONS.ag for support.
-		</description>
-		<disclaimer lang="en">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.</disclaimer>
-		
-		<platform>all</platform>
-	</extension>
-</addon>
-
-<addon id="program.plexus"
-       name="Plexus"
-       version="2.0.0"
-       provider-name="enen92, TV ADDONS">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="script.module.requests" />
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>executable</provides>
-  </extension>
-  
-  <extension point="xbmc.addon.metadata">
-    <summary>SopCast and AceStream for Kodi</summary>
-    <description lang="en">Plexus - Any complex structure containing an intricate network of parts. Plexus brings native peer-to-peer support (AceStream and SopCast) for Kodi Entertainment Center for several platforms.[CR][CR]Documentation: (missing)</description>
-    <description lang="pt">Plexus - Uma estrutura complexa constituída por uma rede de partes. O Plexus adiciona suporte peer-to-peer nativo (AceStream e Sopcast) ao Kodi Entertainment Center para várias plataformas.[CR][CR]Documentação: (em falta)</description>
-    <disclaimer lang="en">The author does not host nor distribute any of the content you may watch using this addon. The author has no part in the development of any included technologies. When seeking help in Kodi's forum please respect rules (http://kodi.wiki/view/Forum_rules).</disclaimer>
-    <disclaimer lang="pt">Os autores não alojam nem distribuem nenhum do conteúdo que poderá ser reproduzido a partir deste addon. Os autores não têm qualquer parte no desenvolvimento de qualquer uma das tecnologias. Se procurar ajuda no fórum oficial do Kodi por favor respeite as regras do fórum (http://kodi.wiki/view/Forum_rules).</disclaimer>
-    <forum>http://forums.tvaddons.ag</forum>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 
 <addon id="plugin.program.gdrive" version="0.7.6" name="gdrive" provider-name="ddurdle">
     <requires>
