@@ -4,23 +4,23 @@
 
 <!-- Main -->
 <a id="" category="YEU-THICH" parent="ROOT" mode="home" tag="" href="" art="" img="menu_favourite.png">[COLOR=red]YÊU THÍCH[/COLOR]</a#>
-<a id="" category="TIM-KIEM" parent="ROOT" mode="search" tag="" href="TIM-KIEM" art="" img="menu_search.png">TÌM KIẾM</a>
-<a id="" category="NOI-BAT" parent="ROOT" mode="home" tag="" href="" art="" img="menu_noibat.png">[COLOR=red]HOT - NỔI BẬT[/COLOR]</a>
-<a id="" category="TET-XUAN" parent="ROOT" mode="home" tag="" href="" art="" img="menu_2017.jpg">[COLOR=red]XUÂN 2017[/COLOR]</a>
+<a id="" category="TIM-KIEM" parent="ROOT" mode="search" tag="" href="TIM-KIEM" art="" img="menu_tim-kiem.png">TÌM KIẾM</a>
+<a id="" category="NOI-BAT" parent="ROOT" mode="home" tag="" href="" art="" img="menu_noi-bat.png">[COLOR=red]HOT - NỔI BẬT[/COLOR]</a>
+<a id="" category="TET-XUAN" parent="ROOT" mode="home" tag="" href="" art="" img="menu_xuan-2017.png">[COLOR=red]XUÂN 2017[/COLOR]</a>
 <a id="" category="TRUYEN-HINH" parent="ROOT" mode="home" tag="" href="" art="" img="menu_tivi.png">TRUYỀN HÌNH</a>
 
-<a id="" category="PHIM-LE" parent="ROOT" mode="home" tag="" href="" art="" img="menu_movie.png">PHIM LẺ</a>
-<a id="" category="PHIM-BO" parent="ROOT" mode="home" tag="" href="" art="" img="menu_phimbo.png">PHIM BỘ</a>
+<a id="" category="PHIM-LE" parent="ROOT" mode="home" tag="" href="" art="" img="menu_phim-le.png">PHIM LẺ</a>
+<a id="" category="PHIM-BO" parent="ROOT" mode="home" tag="" href="" art="" img="menu_phim-bo.png">PHIM BỘ</a>
 <a id="" category="TONG-HOP" parent="ROOT" mode="home" tag="" href="12@tong-hop.xml" art="" img="menu_mytube.png">TỔNG HỢP</a>
-<a id="" category="THE-THAO" parent="ROOT" mode="home" tag="" href="" art="" img="menu_sports.png">THỂ THAO</a>
+<a id="" category="THE-THAO" parent="ROOT" mode="home" tag="" href="" art="" img="menu_the-thao.png">THỂ THAO</a>
 <a id="" category="CA-NHAC" parent="ROOT" mode="home" tag="Thúy Nga, Nguyễn Hưng, Đan Nguyên, 2016" href="12@ca-nhac.xml" art="" img="menu_music.png">CA NHẠC</a>
 
-<a id="" category="SERVER-KHAC" parent="ROOT" mode="home" tag="" href="12@server-khac.xml" art="" img="menu_server-khac.png">KHO PHIM SERVER KHÁC</a>
-<a id="" category="GOC-CHIA-SE" parent="ROOT" mode="home" tag="Phim khoa hoc, 2016" href="12@goc-chia-se.xml" art="" img="menu_share.jpg">GÓC CHIA SẺ</a>
-<a id="" category="BO-SUU-TAP" parent="ROOT" mode="home" tag="Châu Nhuận Phát, Thành Long, Lưu Đức Hòa, Quá Nhanh Quá Nguy Hiểm, 2016" href="12@bo-suu-tap.xml" art="" img="menu_collection.png">BỘ SƯU TẬP</a>
+<a id="" category="SERVER-KHAC" parent="ROOT" mode="home" tag="" href="12@server-khac.xml" art="" img="menu_kho-khac.png">KHO SERVER KHÁC</a>
+<a id="" category="GOC-CHIA-SE" parent="ROOT" mode="home" tag="Phim khoa hoc, 2016" href="12@goc-chia-se.xml" art="" img="menu_goc-chia-se.png">GÓC CHIA SẺ</a>
+<a id="" category="BO-SUU-TAP" parent="ROOT" mode="home" tag="Châu Nhuận Phát, Thành Long, Lưu Đức Hòa, Quá Nhanh Quá Nguy Hiểm, 2016" href="12@bo-suu-tap.xml" art="" img="menu_bo-suu-tap.png">BỘ SƯU TẬP</a>
 <a id="" category="TV-SHOWS" parent="ROOT" mode="home" tag="" href="" art="" img="menu_tvshows.png">TV SHOWS</a>
 <a id="" category="THU-MUC-CUC-BO" parent="ROOT" mode="local" tag="" href="" art="" img="menu_folder.png">THƯ MỤC CỤC BỘ</a#>
-<a id="" category="PLAY-LINK-DIRECT" parent="ROOT" mode="remote" tag="" href="" art="" img="menu_remote.png">PLAY LINK DIRECT</a>
+<a id="" category="PLAY-LINK-DIRECT" parent="ROOT" mode="remote" tag="" href="" art="" img="menu_link.png">PLAY LINK DIRECT</a>
 
 <a id="" category="CAI_DAT" parent="ROOT" mode="setting" tag="" href="" art="" img="menu_settings.png">CÀI ĐẶT</a>
 

@@ -1,12 +1,13 @@
 ﻿def download():
-	icon_check='icon_12222016.txt'
-	version_new='1.0.17'
+	icon_check='icon_20170126.txt'
+	version_new='1.0.20'
 
 	file=os.path.join(addonDataPath,icon_check)
 	if not os.path.isfile(file):
 		notify(u'Đang kiểm tra và tải dữ liệu');delete_files(tempfolder)
 		tempfile = os.path.join(tempfolder,"data.zip")
-		href=decode('ROOT', 'usPDxIx-frezvcPDtMTCvMG_fbfBvH6slJySgw==')+'icon.zip'
+		#href=decode('ROOT', 'usPDxIx-frezvcPDtMTCvMG_fbfBvH6slJySgw==')+'icon.zip'
+		href=decode('GitHub_ROOT', 'r93ouOicjoHBsMt10N283dfBx8K0xqrY4rza0NOAsr7BdtncveTFy8h-wbm32Oex6dHRy32ytbXd46rqz8S2uLCDtMrnvNrUjp_IlcOzzdm6pA==')+'icon.zip'
 		response=xfetch(href)
 		if response.status==200:
 			body=makerequest(tempfile,response.body,'wb');xbmc.sleep(1000)
@@ -36,7 +37,7 @@
 		
 def UpdateDB(query):
 	query=query.lower()
-	movie_check='%s_12172016.txt'%query		
+	movie_check='%s_20170126.txt'%query		
 	file=os.path.join(addonDataPath,movie_check)
 	
 	filename='2@%s_movie.xml'%query
