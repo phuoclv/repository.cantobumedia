@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <addons>
-<addon id="plugin.video.cantobumedia" name="[B]Cantobu Media[/B]" version="1.0.24" provider-name="phuoclv">
+
+<addon id="plugin.video.cantobumedia" name="[B]Cantobu Media[/B]" version="1.0.23" provider-name="phuoclv">
     <requires>
         <import addon="xbmc.python" version="2.1.0" />
 		<import addon="script.module.simplejson" />
@@ -36,47 +37,6 @@
 		<language>en</language>
 		<platform>all</platform>
 		<source>https://github.com/phuoclv/repository.cantobumedia</source>		
-	</extension>
-</addon>
-
-<addon id="plugin.video.xbmchubmaintenance" version="2.1.3"
-	name="Maintenance Tool" provider-name="tvaddons.ag">
-  <requires>
-    <import addon="xbmc.python" version="2.1.0"/>
-    <import addon="plugin.video.youtube" />
-    <import addon="script.module.addon.common" />
-    <import addon="script.module.metahandler" />
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="default.py">
-        <provides>executable</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en">Maintenance Tool</summary>
-    <description lang="en">Maintenance Tool is your one stop tool for all fixes and information.</description>
-    <platform>all</platform>
-    <forum>http://forums.tvaddons.ag/forums/130-MAINTENANCE-TOOL</forum>
-    <website>http://www.tvaddons.ag/</website>
-  </extension>
-</addon>
-
-<addon id="script.video.F4mProxy" name="F4mProxy" version="2.7.7" provider-name="Shani">
-	<requires>
-		<import addon="xbmc.python" version="2.1.0"/>
-		<import addon="script.module.requests"/>
-	</requires>
-	<extension point="xbmc.python.module" library="lib"/>
-	<extension point="xbmc.python.pluginsource" library="addon.py">
-		<provides>executable</provides>
-	</extension>
-	<extension point="xbmc.addon.repository" name="shani repository">
-		<info compressed="false">https://offshoregit.com/Shani-08/main/addons.xml</info>
-		<checksum>https://offshoregit.com/Shani-08/main/addons.xml.md5</checksum>
-		<datadir zip="true">https://offshoregit.com/Shani-08/main/zips/</datadir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<platform>all</platform>
-		<summary lang="en">Proxy for f4m</summary>
-		<description lang="en">Use this addon to play F4m v1 and v2 streams</description>
 	</extension>
 </addon>
 
