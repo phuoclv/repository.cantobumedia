@@ -102,6 +102,25 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.kodi4vn.fimfast" version="0.7" name="*[COLOR yellow]fimfast.net[/COLOR]" provider-name="thongld">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="script.module.kodiswift"/>
+    <import addon="script.module.kodi-six"/>
+    <import addon="script.module.kodi4vn" version="1.0"/>
+    <import addon="script.module.cfscrape"/>
+    <import addon="script.module.requests"/>
+    <import addon="script.module.urlresolver"/>
+    <import addon="script.module.futures"/>
+  </requires>
+  <extension point="xbmc.python.module" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+  <summary>Fimfast.com</summary>
+  <description>Watch free fimfast.com (Vietnamese) Channels</description>
+  <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="script.module.simple.downloader" name="Simple Downloader for xbmc plugins" provider-name="TheCollective" version="1.9.5">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
